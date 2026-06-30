@@ -9,9 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.2",
+    "@ui5/webcomponents": "^2.23.2",
+    "@ui5/webcomponents-fiori": "^2.23.2",
+    "@ui5/webcomponents-react": "^2.23.2",
+    "jose": "^6.2.3",
+    "lucide-react": "^1.22.0",
     "next": "16.2.9",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
