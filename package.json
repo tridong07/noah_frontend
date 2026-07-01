@@ -10,9 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.2",
-    "@ui5/webcomponents": "^2.23.2",
-    "@ui5/webcomponents-fiori": "^2.23.2",
-    "@ui5/webcomponents-react": "^2.23.2",
+    "framer-motion": "^12.42.2",
     "jose": "^6.2.3",
     "lucide-react": "^1.22.0",
     "next": "16.2.9",
