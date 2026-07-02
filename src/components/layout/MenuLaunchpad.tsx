@@ -67,7 +67,7 @@ export const MenuLaunchpad = ({ menuData }: MenuLaunchpadProps) => {
                 className="group relative flex flex-col items-center justify-center p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-[#0a6ed1] transition-all"
               >
                 <div onClick={(e) => toggleFavorite(e, item.menuNo)} className="absolute top-2 right-2 p-1 cursor-pointer">
-                  <Star size={18} className="fill-yellow-400 text-yellow-400" />
+                  <Star size={18} className={`${favorites.includes(item.menuNo) ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-slate-300'}`} />
                 </div>
                 <div className="p-3 rounded-full bg-slate-50 text-[#0a6ed1] mb-3 group-hover:bg-[#0a6ed1] group-hover:text-white transition-all">
                   <Icon size={24} />
