@@ -1,58 +1,43 @@
 "use client";
+
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { LoginForm } from "@/features/auth/components/LoginForm";
 import { ForgotPasswordForm } from "@/features/auth/components/ForgotPasswordForm";
 import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm";
-import { useTranslation } from "@/hooks/useTranslation"; // Giả định hook của bạn ở đây
+import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
-import { useRouter } from "next/navigation";
+import { useAuthManager } from "@/features/auth/hooks/useAuthManager";
 
 export default function AuthFormManager() {
   const { language } = useLanguage();
   const { t } = useTranslation(language);
-
-  const [mode, setMode] = useState<"login" | "forgot" | "reset">("login");
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
-  // Các state cần thiết cho các form
+  
+  // Dùng các giá trị từ hook
+  const { mode, setMode, isLoading, message, executeAuthAction } = useAuthManager();
+  
+  // Chỉ giữ lại các state local phục vụ cho Form input nếu cần
   const [username, setUsername] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [message, setMessage] = useState<{ text: string; type: string } | null>(null);
 
+  // Wrapper để gọi action và điều hướng sau khi xong
   const handleAuth = async (endpoint: string, payload: any, nextMode?: "login" | "reset") => {
-    setIsLoading(true);
-    setMessage(null);
-    console.log("Payload gửi lên API:", JSON.stringify(payload));
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        credentials: 'include',
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Request failed");
-      
-      if (nextMode) setMode(nextMode);
-      setMessage({ text: data.message || "Success", type: "Positive" });
-
-      console.log("login:", "thành công");
-      if (nextMode) setMode(nextMode);
-      else {
-        // Chỉ đẩy về home nếu là thành công của login
-        router.push("/home"); 
-      }
-    } catch (err: any) {
-      setMessage({ text: err.message || "Đăng nhập thất bại", type : "Negative" });
-
-    } finally {
-      setIsLoading(false);
+    const data = await executeAuthAction(endpoint, payload, nextMode);
+    if (data && endpoint === 'login') {
+      //router.push("/home");
+      window.location.href = "/home";
     }
   };
 
   return (
     <div className="w-full max-w-sm mx-auto">
+      {/* Hiển thị message lỗi/thành công nếu có */}
+      {message.text && (
+        <div className={`mb-4 p-2 rounded ${message.isError ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}`}>
+          {message.text}
+        </div>
+      )}
 
       {mode === "login" && (
         <LoginForm 

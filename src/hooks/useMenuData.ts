@@ -12,7 +12,7 @@ export function useMenuData() {
   return useQuery<MenuNode[]>({
     queryKey: ['menuTree'],
     queryFn: async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sys-menu`);
       if (!res.ok) throw new Error('Network error');
       const data = await res.json();
       console.log("Dữ liệu gốc từ API:", data);

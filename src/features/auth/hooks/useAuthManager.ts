@@ -15,13 +15,16 @@ export const useAuthManager = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
+        credentials: 'include',
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      
-      setMessage({ text: data.message || "Thành công", isError: false });
-      if (successMode) setMode(successMode);
-      return data;
+      if (response.ok) {
+        setMessage({ text: data.message, isError: false });
+        if (successMode) setMode(successMode);
+        return data; // Đảm bảo có dòng return này!
+      }else{
+        setMessage({ text: data.message || "Có lỗi xảy ra", isError: true });
+      }
     } catch (error: any) {
       setMessage({ text: error.message, isError: true });
     } finally {
