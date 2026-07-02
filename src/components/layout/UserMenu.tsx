@@ -7,18 +7,20 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { useUserProfile } from "@/features/auth/hooks/useUserProfile";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuthManager } from "@/features/auth/hooks/useAuthManager";
 
 interface UserMenuProps {
-  setIsModalOpen: (value: boolean) => void;
+  onOpenModal: (tab: "profile" | "settings") => void;
 }
 
-export const UserMenu = ({ setIsModalOpen }: UserMenuProps) => {
+export const UserMenu = ({ onOpenModal }: UserMenuProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { data: user, isLoading, isError } = useUserProfile();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { language } = useLanguage();
   const { t } = useTranslation(language);
+  const { logout } = useAuthManager();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -29,20 +31,6 @@ export const UserMenu = ({ setIsModalOpen }: UserMenuProps) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleLogout = useCallback(async () => {
-    try {
-      document.cookie = "sap_session_token", "", {
-          httpOnly: true,
-          expires: new Date(0), // Lệnh xóa cookie chuẩn trình duyệt
-          path: "/",
-        };
-      router.refresh();
-      window.location.replace("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  }, [router]);
 
   // 1. Loading State
   if (isLoading) return <div className="animate-pulse w-8 h-8 rounded-full bg-zinc-700" />;
@@ -80,7 +68,7 @@ export const UserMenu = ({ setIsModalOpen }: UserMenuProps) => {
           >
             {/* User Info Header */}
             <div 
-              onClick={() => { setIsModalOpen(true); setIsDropdownOpen(false); }}
+              onClick={() => { onOpenModal("profile"); setIsDropdownOpen(false); }}
               className="px-4 py-3 bg-zinc-50 border-b border-zinc-100 mb-1 hover:bg-zinc-100 cursor-pointer"
             >
               <div className="font-semibold text-sm text-zinc-800">{user.fullname}</div>
@@ -93,17 +81,20 @@ export const UserMenu = ({ setIsModalOpen }: UserMenuProps) => {
             </div>
 
             {/* Menu Actions */}
-            <button onClick={() => { setIsModalOpen(true); setIsDropdownOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 text-left">
+            <button onClick={() => { onOpenModal("profile"); setIsDropdownOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 text-left">
               <User className="h-4 w-4 text-zinc-500" /> {t("profileInfo", "home", "Profile")}
             </button>
 
-            <button className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 text-left">
+            <button onClick={() => { 
+                  onOpenModal("settings");
+                  setIsDropdownOpen(false);
+                }} className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 text-left">
               <Settings className="h-4 w-4 text-zinc-500" /> {t("accountSettings", "home", "Settings")}
             </button>
 
             <div className="border-t border-zinc-100 my-1" />
 
-            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 text-left">
+            <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 text-left">
               <LogOut className="h-4 w-4 text-red-500" /> {t("menuLogout", "home", "Logout")}
             </button>
           </motion.div>

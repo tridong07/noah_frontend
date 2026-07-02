@@ -6,6 +6,7 @@ interface UserApiResponse {
   phone?: string;
   email?: string;
   department?: string;
+  avatarUrl?: string;
   role?: string;
 }
 
@@ -16,6 +17,7 @@ export interface UserProfile {
   phone?: string;
   email?: string;
   department?: string;
+  avatarUrl?: string;
   role?: string;
 }
 
@@ -48,6 +50,7 @@ export const useUserProfile = () => {
         id: data.id,
         shortName: shortNameForAvatar,
         fullname: rawName, // Lưu tên đầy đủ để hiển thị bên cạnh
+        avatarUrl: data.avatarUrl, // Lưu URL avatar nếu có
         phone: data.phone,
         email: data.email,
         department: data.department,

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export interface MenuNode {
   menuNo: string;
+  upMenuNo: string;
   menuName: string;
   winNo?: string;
   iconName?: string;

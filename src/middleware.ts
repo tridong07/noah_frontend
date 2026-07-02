@@ -5,8 +5,6 @@ import { jwtVerify } from "jose";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("sap_session_token")?.value;
-  console.log("Middleware checking path:", pathname);
-  console.log("token:", token);
   // Kiểm tra token chỉ khi cần thiết
   let isTokenValid = false;
   if (token) {

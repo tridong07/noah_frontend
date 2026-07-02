@@ -6,11 +6,18 @@ import { Bell, Search } from "lucide-react";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { useUserProfile } from "@/features/auth/hooks/useUserProfile";
-import { ProfileModal } from "@/components/layout/ProfileModal";
+import { UserModal } from "@/features/auth/components/ProfileModal";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTab, setModalTab] = useState<"profile" | "settings">("profile");
   const { data: user, isLoading } = useUserProfile();
+
+  // Hàm mở Modal với tab chỉ định
+  const openModal = (tab: "profile" | "settings") => {
+    setModalTab(tab);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#f1f3f5] font-sans">
@@ -28,15 +35,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           
           <LanguageSwitcher />
           <button className="hover:text-[#4db1ff] transition-colors"><Bell size={18} /></button>
-          <UserMenu setIsModalOpen={setIsModalOpen} />
+          <UserMenu onOpenModal={openModal} />
         </div>
       </header>
       {isModalOpen && (
-        <ProfileModal 
+        <UserModal 
           isOpen={isModalOpen} 
           onClose={() => setIsModalOpen(false)} 
           user={user} 
           isLoading={isLoading}
+          initialTab={modalTab}
         />
       )}
 

@@ -8,7 +8,9 @@ export const useAuthManager = () => {
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  const executeAuthAction = async (url: string, body: any, successMode?: "login" | "reset") => {
+  const executeAuthAction = async (url: string, body: Record<string, any>, successMode?: "login" | "reset") => {
+    if (isLoading) return;
+    
     setIsLoading(true);
     try {
       const response = await fetch(`${baseUrl}/auth/${url}`, {
@@ -24,6 +26,7 @@ export const useAuthManager = () => {
         return data; // Đảm bảo có dòng return này!
       }else{
         setMessage({ text: data.message || "Có lỗi xảy ra", isError: true });
+        return null; // Trả về null nếu có lỗi để tránh undefined
       }
     } catch (error: any) {
       setMessage({ text: error.message, isError: true });
@@ -32,5 +35,33 @@ export const useAuthManager = () => {
     }
   };
 
-  return { mode, setMode, isLoading, message, resetData, setResetData, executeAuthAction };
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      // Gọi API logout để Backend xóa cookie
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      // Chuyển hướng về login sau khi logout thành công
+      window.location.replace("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+      // Vẫn nên ép redirect nếu logout lỗi để tránh kẹt session
+      window.location.replace("/login"); 
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const changePasswordMutation = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
+  if (newPassword !== confirmPassword) {
+    setMessage({ text: "Mật khẩu mới không khớp!", isError: true });
+    return;
+  }
+  return await executeAuthAction("change-password", { currentPassword, newPassword });
+};
+
+  return { mode, setMode, isLoading, message, resetData, setResetData, executeAuthAction, logout, changePasswordMutation };
 };

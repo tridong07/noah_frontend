@@ -5,7 +5,7 @@ export const useUpdateProfile = () => {
   
   return useMutation({
     mutationFn: async (data: { name: string; phone: string; email: string }) => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me/update`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/update-profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
