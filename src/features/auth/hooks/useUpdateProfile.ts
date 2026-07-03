@@ -1,22 +1,25 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNotification } from "@/context/NotificationContext";
+import axios from 'axios';
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
+  const { show } = useNotification();
   
   return useMutation({
     mutationFn: async (data: { name: string; phone: string; email: string }) => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/update-profile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error('Cập nhật thất bại');
-      return response.json();
+      // Axios tự động xử lý JSON và ném lỗi nếu response.status không nằm trong khoảng 2xx
+      const { data: result } = await axios.post('/auth/update-profile', data);
+      return result;
     },
-    onSuccess: () => {
-      // Refresh lại cache profile sau khi update thành công
+    onSuccess: (data) => {
+      show(data.message || 'Cập nhật thông tin thành công', "Thành công", "success");
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+    },
+    onError: (error: any) => {
+      // Axios lưu lỗi server trong error.response.data
+      const message = error.response?.data?.message || error.message || 'Cập nhật thất bại';
+      show(message, "Lỗi", "error");
     }
   });
 };

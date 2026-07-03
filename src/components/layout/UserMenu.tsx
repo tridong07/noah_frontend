@@ -64,15 +64,15 @@ export const UserMenu = ({ onOpenModal }: UserMenuProps) => {
             animate={{ opacity: 1, y: 0 }} 
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-zinc-200 text-[#32363a] py-2 z-[120] overflow-hidden"
+            className="absolute right-0 mt-2 w-64 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200 dark:border-zinc-700 text-[#32363a] dark:text-zinc-200 py-2 z-[120] overflow-hidden"
           >
             {/* User Info Header */}
             <div 
               onClick={() => { onOpenModal("profile"); setIsDropdownOpen(false); }}
-              className="px-4 py-3 bg-zinc-50 border-b border-zinc-100 mb-1 hover:bg-zinc-100 cursor-pointer"
+              className="px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-700 mb-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
             >
-              <div className="font-semibold text-sm text-zinc-800">{user.fullname}</div>
-              <div className="text-[11px] text-zinc-500 mt-0.5">
+              <div className="font-semibold text-sm text-zinc-800 dark:text-white">{user.fullname}</div>
+              <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                 <strong>{t("employeeId", "home", "ID")}:</strong> {user.id}
                 <div className="flex items-center gap-1 mt-1 text-[#0a6ed1]">
                   <ShieldCheck className="h-3 w-3" /> {user.role}
@@ -81,21 +81,21 @@ export const UserMenu = ({ onOpenModal }: UserMenuProps) => {
             </div>
 
             {/* Menu Actions */}
-            <button onClick={() => { onOpenModal("profile"); setIsDropdownOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 text-left">
-              <User className="h-4 w-4 text-zinc-500" /> {t("profileInfo", "home", "Profile")}
+            <button onClick={() => { onOpenModal("profile"); setIsDropdownOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 text-left">
+              <User className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /> {t("profileInfo", "home", "Profile")}
             </button>
 
             <button onClick={() => { 
                   onOpenModal("settings");
                   setIsDropdownOpen(false);
-                }} className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 text-left">
-              <Settings className="h-4 w-4 text-zinc-500" /> {t("accountSettings", "home", "Settings")}
+                }} className="w-full flex items-center gap-3 px-4 py-2 text-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 text-left">
+              <Settings className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /> {t("accountSettings", "home", "Settings")}
             </button>
 
-            <div className="border-t border-zinc-100 my-1" />
+            <div className="border-t border-zinc-100 dark:border-zinc-700 my-1" />
 
-            <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 text-left">
-              <LogOut className="h-4 w-4 text-red-500" /> {t("menuLogout", "home", "Logout")}
+            <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900 text-left">
+              <LogOut className="h-4 w-4 text-red-500 dark:text-red-400" /> {t("menuLogout", "home", "Logout")}
             </button>
           </motion.div>
         )}

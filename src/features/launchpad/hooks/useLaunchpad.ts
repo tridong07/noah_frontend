@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { MenuNode } from "@/hooks/useMenuData";
 import { useRouter } from "next/navigation";
 import { useMenuContext } from "@/context/MenuContext";
+import { useNotification } from "@/context/NotificationContext";
 
 export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: string) => {
   const router = useRouter();
@@ -9,6 +10,7 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
   const [favorites, setFavorites] = useState<string[]>([]);
   const [stack, setStack] = useState<MenuNode[]>([]);
   const clickTimer = useRef<NodeJS.Timeout | null>(null);
+  const { show } = useNotification();
 
   // activeGroup luôn là phần tử cuối của stack
   const activeGroup = stack.length > 0 ? stack[stack.length - 1] : null;
@@ -42,9 +44,18 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
   };
 
   const handleTileClick = (item: MenuNode) => {
+    const isPathValid = (item: MenuNode) => {
+      // Ví dụ: kiểm tra nếu cả winNo và menuNo đều trống thì coi là không tồn tại
+      return !!(item.winNo || item.menuNo);
+    };
+
     if (clickTimer.current) {
       clearTimeout(clickTimer.current);
       clickTimer.current = null;
+      if (!isPathValid(item)) {
+        show("Chức năng này hiện chưa được cấu hình hoặc không tồn tại.", "Thông báo", "error");
+        return;
+      }
       item.winNo ? router.push(`/app/${item.winNo.toLowerCase()}`) : router.push(`/home/${item.menuNo}`);
       return;
     }
@@ -54,6 +65,10 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
       if (item.children && item.children.length > 0) {
         pushStack(item); // Sử dụng pushStack thay vì setActiveGroup
       } else {
+        if (!isPathValid(item)) {
+          show("Chức năng này hiện chưa được cấu hình hoặc không tồn tại.", "Thông báo", "error");
+          return;
+        }
         setBreadcrumbs(["Home", ...stack.map(s => s.menuName), item.menuName]);
         item.winNo ? router.push(`/app/${item.winNo.toLowerCase()}`) : router.push(`/home/${item.menuNo}`);
       }
@@ -61,15 +76,22 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
   };
 
   const processedData = useMemo(() => {
-    if (!menuData) return { groups: [], favItems: [] };
+    if (!menuData) return { groups: [], displayItems: [], favItems: [] };
+
     const allItems: MenuNode[] = [];
     const collect = (n: MenuNode[]) => n.forEach(i => { allItems.push(i); if (i.children) collect(i.children); });
     collect(menuData);
+
+    // Danh sách hiển thị dựa trên cấp hiện tại
+    const searchScope = activeGroup ? (activeGroup.children || []) : menuData;
+    const filtered = searchScope.filter(m => m.menuName.toLowerCase().includes(searchTerm.toLowerCase()));
+
     return {
-      groups: menuData.filter(m => m.menuName.toLowerCase().includes(searchTerm.toLowerCase())),
+      groups: menuData, // Giữ nguyên cấu trúc phân cấp gốc để render ở Root
+      displayItems: filtered, // Danh sách con đã lọc (để dùng khi ở sub-level)
       favItems: allItems.filter(i => favorites.includes(i.menuNo))
     };
-  }, [menuData, searchTerm, favorites]);
+  }, [menuData, searchTerm, favorites, activeGroup]);
 
   return { 
     ...processedData, 

@@ -15,7 +15,7 @@ export default function AuthFormManager() {
   const router = useRouter();
   
   // Dùng các giá trị từ hook
-  const { mode, setMode, isLoading, message, executeAuthAction } = useAuthManager();
+  const { mode, setMode, isLoading, executeAuthAction } = useAuthManager();
   
   // Chỉ giữ lại các state local phục vụ cho Form input nếu cần
   const [username, setUsername] = useState("");
@@ -32,13 +32,6 @@ export default function AuthFormManager() {
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      {/* Hiển thị message lỗi/thành công nếu có */}
-      {message.text && (
-        <div className={`mb-4 p-2 rounded ${message.isError ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}`}>
-          {message.text}
-        </div>
-      )}
-
       {mode === "login" && (
         <LoginForm 
           isLoading={isLoading} 

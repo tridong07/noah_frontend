@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { useNotification } from "@/context/NotificationContext";
+import axios from 'axios';
 
 interface UserApiResponse {
   id: number;
@@ -21,30 +23,27 @@ export interface UserProfile {
   role?: string;
 }
 
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true, // QUAN TRỌNG: Đây chính là thay thế cho credentials: 'include'
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 export const useUserProfile = () => {
+  const { show } = useNotification();
+  
   return useQuery<UserProfile | null>({
     queryKey: ['userProfile'],
     queryFn: async (): Promise<UserProfile | null> => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
-        credentials: 'include',
-      });
-      
-      if (response.status === 401) return null;
-      if (!response.ok) throw new Error('Failed to fetch profile');
-      
-      const data: UserApiResponse = await response.json();
+      const { data } = await api.get<UserApiResponse>('/auth/me');
 
       // Logic cắt ngắn chuỗi để không bị tràn Avatar
       const rawName = data.shortname || "Admin";
-      let shortNameForAvatar = "";
-
-      // Kiểm tra nếu là tiếng Trung/Nhật/Hàn (Unicode)
-      if (/[\u4e00-\u9fa5]/.test(rawName)) {
-        shortNameForAvatar = rawName.length > 1 ? rawName.slice(0, 1) : rawName;
-      } else {
-        // Tiếng Việt/Anh: lấy 2 ký tự đầu
-        shortNameForAvatar = rawName.substring(0, 2).toUpperCase();
-      }
+      const shortNameForAvatar = /[\u4e00-\u9fa5]/.test(rawName) 
+        ? rawName.slice(0, 1) 
+        : rawName.substring(0, 2).toUpperCase();
 
       return {
         id: data.id,

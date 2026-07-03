@@ -1,4 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export interface MenuNode {
   menuNo: string;
@@ -13,12 +22,10 @@ export function useMenuData() {
   return useQuery<MenuNode[]>({
     queryKey: ['menuTree'],
     queryFn: async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sys-menu`);
-      if (!res.ok) throw new Error('Network error');
-      const data = await res.json();
-      console.log("Dữ liệu gốc từ API:", data);
-      return data; // Trả về trực tiếp vì Backend đã xử lý xong
+      // Dùng instance api: tự động đính kèm cookies và sử dụng baseURL
+      const { data } = await api.get<MenuNode[]>('/sys-menu');
+      return data;
     },
-    staleTime: 3600000,
+    staleTime: 3600000, // 1 giờ
   });
 }

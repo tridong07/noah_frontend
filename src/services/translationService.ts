@@ -1,11 +1,22 @@
+
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 const CACHE_KEY = 'app_translations_cache';
 const VERSION_KEY = 'app_translations_version';
 
 export const getTranslations = async (lang: 'vi' | 'en') => {
   try {
     // 1. Lấy phiên bản mới nhất từ Server (Request này cực nhẹ)
-    const versionRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/translations/version`);
-    const { version } = await versionRes.json();
+    const { data: versionData } = await api.get('/translations/version');
+    const { version } = versionData;
     
     // 2. So sánh với phiên bản đang lưu trong máy người dùng
     const localVersion = localStorage.getItem(VERSION_KEY);
@@ -17,8 +28,7 @@ export const getTranslations = async (lang: 'vi' | 'en') => {
     }
 
     // 3. Nếu khác nhau (hoặc chưa có), tải toàn bộ từ vựng mới
-    const fullRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/translations`);
-    const data = await fullRes.json();
+    const { data } = await api.get('/translations');
     
     // Lưu vào localStorage và cập nhật version
     localStorage.setItem(CACHE_KEY, JSON.stringify(data));

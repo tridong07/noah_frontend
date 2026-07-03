@@ -1,6 +1,15 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { getTranslations } from "@//services/translationService";
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true, // QUAN TRỌNG: Đây chính là thay thế cho credentials: 'include'
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export function useTranslation(defaultLang: "vi" | "en" = "vi") {
   const [language, setLanguage] = useState<"vi" | "en">(defaultLang);
@@ -37,15 +46,11 @@ export function useTranslation(defaultLang: "vi" | "en" = "vi") {
     if (!nsData || typeof nsData[key] !== 'string') {
       // Đăng ký tự động
       if (process.env.NODE_ENV === 'development') {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/translations/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            key, 
-            namespace, 
-            defaultValue: defaultValue || key 
-          })
-        }).catch(() => {});
+        api.post(`/translations/register`, { 
+          key, 
+          namespace, 
+          defaultValue: defaultValue || key 
+        }).catch(() => {}); // Silent catch
       }
       
       // LUÔN TRẢ VỀ STRING

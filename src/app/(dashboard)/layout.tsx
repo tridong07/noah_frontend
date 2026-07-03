@@ -20,8 +20,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <div className="min-h-screen bg-[#f1f3f5] font-sans">
-      <header className="bg-[#1d2d3d] text-white px-6 py-2.5 flex items-center justify-between shadow-md sticky top-0 z-40">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans transition-colors">
+      <header className="bg-[#1d2d3d] dark:bg-zinc-900 text-white px-6 py-2.5 flex items-center justify-between shadow-md sticky top-0 z-40 border-b border-zinc-800">
         <div className="flex items-center gap-4">
           <div className="font-bold text-lg text-[#f0b400]">SAP</div>
           <span className="border-l border-white/20 pl-4 text-sm font-light opacity-90">Enterprise System</span>
@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
       )}
 
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800">
         <Breadcrumb />
       </div>
 

@@ -1,9 +1,19 @@
 import { useState } from 'react';
+import { useNotification } from "@/context/NotificationContext";
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true, // QUAN TRỌNG: Đây chính là thay thế cho credentials: 'include'
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export const useAuthManager = () => {
   const [mode, setMode] = useState<"login" | "forgot" | "reset">("login");
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ text: "", isError: false });
+  const { show } = useNotification();
   const [resetData, setResetData] = useState({ username: "" });
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -13,23 +23,14 @@ export const useAuthManager = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetch(`${baseUrl}/auth/${url}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-        credentials: 'include',
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setMessage({ text: data.message, isError: false });
-        if (successMode) setMode(successMode);
-        return data; // Đảm bảo có dòng return này!
-      }else{
-        setMessage({ text: data.message || "Có lỗi xảy ra", isError: true });
-        return null; // Trả về null nếu có lỗi để tránh undefined
-      }
+      const { data } = await api.post(`/auth/${url}`, body);
+
+      show(data.message, "Thành công", "success");
+      if (successMode) setMode(successMode);
+      return data;
     } catch (error: any) {
-      setMessage({ text: error.message, isError: true });
+      show(error.message, "Lỗi", "error");
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -39,10 +40,7 @@ export const useAuthManager = () => {
     setIsLoading(true);
     try {
       // Gọi API logout để Backend xóa cookie
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      await api.post("/auth/logout", {}, { withCredentials: true });
       
       // Chuyển hướng về login sau khi logout thành công
       window.location.replace("/login");
@@ -57,11 +55,11 @@ export const useAuthManager = () => {
 
   const changePasswordMutation = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
   if (newPassword !== confirmPassword) {
-    setMessage({ text: "Mật khẩu mới không khớp!", isError: true });
+    show("Mật khẩu mới không khớp!", "Lỗi", "error");
     return;
   }
   return await executeAuthAction("change-password", { currentPassword, newPassword });
 };
 
-  return { mode, setMode, isLoading, message, resetData, setResetData, executeAuthAction, logout, changePasswordMutation };
+  return { mode, setMode, isLoading, resetData, setResetData, executeAuthAction, logout, changePasswordMutation };
 };

@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { MenuProvider } from "@/context/MenuContext"; // 1. Import Provider mới
 import { LoadingProvider } from "@/context/LoadingContext";
 import { ThemeProvider } from "next-themes";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -17,9 +18,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <ViewProvider>
           <MenuProvider> {/* 2. Bọc nội dung bằng MenuProvider */}
             <LoadingProvider>
-              <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <NotificationProvider>
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 {children}
               </ThemeProvider>
+              </NotificationProvider>
             </LoadingProvider>
           </MenuProvider>
         </ViewProvider>
