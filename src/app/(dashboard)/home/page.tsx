@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import { MenuLaunchpad } from "@/components/layout/MenuLaunchpad";
+import { Launchpad } from "@/features/launchpad/components/Launchpad";
 import { useMenuData } from "@/hooks/useMenuData";
 
 export default function HomePage() {
@@ -25,7 +25,7 @@ export default function HomePage() {
         <p className="text-slate-500 text-sm mt-1">Hệ thống quản trị nguồn lực doanh nghiệp tập trung.</p>
       </div>
 
-      <MenuLaunchpad menuData={menuData} />
+      <Launchpad menuData={menuData} />
     </div>
   );
 }

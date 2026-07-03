@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import * as LucideIcons from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMenuContext } from "@/context/MenuContext";
@@ -18,6 +18,7 @@ export const MenuLaunchpad = ({ menuData }: MenuLaunchpadProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [activeGroup, setActiveGroup] = useState<MenuNode | null>(null);
+  const clickTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("fav_menus");
@@ -25,41 +26,63 @@ export const MenuLaunchpad = ({ menuData }: MenuLaunchpadProps) => {
   }, []);
 
   const handleTileClick = (item: MenuNode) => {
-    if (item.children && item.children.length > 0) {
-      // Đi sâu vào nhóm con
-      setActiveGroup(item);
-      setBreadcrumbs(["Home", item.menuName]);
-    } else {
-      // Điều hướng đến ứng dụng
-      setBreadcrumbs(["Home", item.menuName]);
+    // Xử lý Double Click (Điều hướng trực tiếp)
+    if (clickTimer.current) {
+      clearTimeout(clickTimer.current);
+      clickTimer.current = null;
+      
+      // Hành động Double Click: Vào thẳng App
       item.winNo 
         ? router.push(`/app/${item.winNo.toLowerCase()}`) 
         : router.push(`/home/${item.menuNo}`);
+      return;
     }
+
+    clickTimer.current = setTimeout(() => {
+      clickTimer.current = null;
+      
+      // Hành động Single Click: Mở sub-nodes hoặc điều hướng
+      if (item.children && item.children.length > 0) {
+        //setActiveGroup(item);
+        const fullItem = menuData?.find(m => m.menuNo === item.menuNo) || item;
+        setActiveGroup(fullItem);
+        setBreadcrumbs(["Home", item.menuName]);
+      } else {
+        setBreadcrumbs(["Home", item.menuName]);
+        item.winNo 
+          ? router.push(`/app/${item.winNo.toLowerCase()}`) 
+          : router.push(`/home/${item.menuNo}`);
+      }
+    }, 250); // Thời gian chờ 250ms là chuẩn cho double-click
   };
 
   const toggleFavorite = (e: React.MouseEvent, menuNo: string) => {
     e.stopPropagation();
-    const newFavs = favorites.includes(menuNo) 
-      ? favorites.filter(id => id !== menuNo) 
-      : [...favorites, menuNo];
-    setFavorites(newFavs);
-    localStorage.setItem("fav_menus", JSON.stringify(newFavs));
+    
+    setFavorites(prevFavs => {
+      const newFavs = prevFavs.includes(menuNo)
+        ? prevFavs.filter(id => id !== menuNo)
+        : [...prevFavs, menuNo];
+        
+      // Cập nhật localStorage ngay tại đây để đồng bộ
+      localStorage.setItem("fav_menus", JSON.stringify(newFavs));
+      
+      return newFavs;
+    });
   };
 
   const { groups, favItems } = useMemo(() => {
     if (!menuData) return { groups: [], favItems: [] };
 
-    // Tìm kiếm sâu trong cây menu
+    // 1. Nhóm (Groups): Chỉ lọc theo searchTerm, không liên quan đến favorites
     const searchMatch = (item: MenuNode): boolean => {
       const matchName = item.menuName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchChildren = item.children?.some(child => searchMatch(child));
       return matchName || !!matchChildren;
     };
-
     const filteredGroups = menuData.filter(searchMatch);
 
-    // Thu thập tất cả các item để xử lý Favorites
+    // 2. Favorites: Lấy danh sách phẳng (flat) từ dữ liệu gốc
     const allItems: MenuNode[] = [];
     const collectItems = (nodes: MenuNode[]) => {
       nodes.forEach(n => {
@@ -70,17 +93,20 @@ export const MenuLaunchpad = ({ menuData }: MenuLaunchpadProps) => {
     collectItems(menuData);
 
     return {
-      groups: filteredGroups,
+      groups: filteredGroups, 
       favItems: allItems.filter(item => favorites.includes(item.menuNo))
     };
   }, [menuData, searchTerm, favorites]);
 
-  const renderAppTile = (item: MenuNode) => {
+  const renderAppTile = (item: MenuNode, context: 'fav' | 'group') => {
     const Icon = (LucideIcons as any)[item.iconName || "LayoutDashboard"] || LucideIcons.LayoutDashboard;
     return (
       <motion.button
         layout
-        key={item.menuNo}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        key={`${context}-${item.menuNo}`}
         onClick={() => handleTileClick(item)}
         className="group relative flex flex-col items-center justify-center p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-[#0a6ed1] transition-all"
       >
@@ -121,10 +147,11 @@ export const MenuLaunchpad = ({ menuData }: MenuLaunchpadProps) => {
       {/* Nội dung chính */}
       {activeGroup ? (
         <motion.div 
-          initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, x: 20 }} 
+          animate={{ opacity: 1, x: 0 }}
           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
         >
-          {activeGroup.children?.map(renderAppTile)}
+          {activeGroup.children?.map((child) => renderAppTile(child, 'group'))}
         </motion.div>
       ) : (
         <AnimatePresence mode="wait">
@@ -135,7 +162,7 @@ export const MenuLaunchpad = ({ menuData }: MenuLaunchpadProps) => {
                   <Star size={16} className="fill-yellow-400 text-yellow-400" /> Favorites
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  {favItems.map(renderAppTile)}
+                  {favItems.map(item => renderAppTile(item, 'fav'))}
                 </div>
               </div>
             )}
@@ -148,7 +175,7 @@ export const MenuLaunchpad = ({ menuData }: MenuLaunchpadProps) => {
                 </h3>
                 {group.children && group.children.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {group.children.map(renderAppTile)}
+                    {group.children?.map((child) => renderAppTile(child, 'group'))}
                   </div>
                 ) : (
                   <p className="text-sm text-slate-400 italic">Không có ứng dụng con</p>
