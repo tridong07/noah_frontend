@@ -55,10 +55,10 @@ export const UserModal = ({ isOpen, onClose, user, isLoading, initialTab = "prof
       >
         <motion.div 
           onClick={(e) => e.stopPropagation()} 
-          className="bg-white rounded-xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]"
+          className="bg-[var(--color-background)] border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]"
         >
           {/* Header */}
-          <div className="bg-[#1d2d3d] p-6 text-white flex-shrink-0">
+          <div className="bg-[#1d2d3d] dark:bg-zinc-900 p-6 text-white flex-shrink-0 transition-colors">
             <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white"><X size={20} /></button>
             <div className="flex justify-center gap-8 mt-2">
               {[ {id: 'profile', label: 'Thông tin cá nhân', icon: User}, {id: 'settings', label: 'Cài đặt', icon: Settings} ].map((tab) => (
@@ -71,7 +71,7 @@ export const UserModal = ({ isOpen, onClose, user, isLoading, initialTab = "prof
           </div>
 
           {/* Body - Dùng flex-grow để tự co giãn */}
-          <div className="flex-grow overflow-y-auto p-8 bg-zinc-50 scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
+          <div className="flex-grow overflow-y-auto p-8 bg-[var(--color-background)] transition-colors scrollbar-thin scrollbar-thumb-zinc-300 scrollbar-track-transparent">
              {activeTab === "profile" ? (
                <ProfileSection 
                   user={user} 
@@ -97,10 +97,9 @@ export const UserModal = ({ isOpen, onClose, user, isLoading, initialTab = "prof
   );
 };
 
-
 const ProfileSection = ({ user, isEditing, formData, setFormData, setIsEditing, isPending, onSave, imgError, setImgError, fileInputRef, handleFileChange, isUploading }: any) => (
   <div className="space-y-6">
-    <div className="flex items-center gap-4 bg-white p-5 rounded-lg border border-zinc-200">
+    <div className="flex items-center gap-4 bg-[var(--color-background)] p-5 rounded-lg border border-zinc-200 dark:border-zinc-700 transition-colors">
       <div className={`h-16 w-16 rounded-full overflow-hidden border border-zinc-200 bg-zinc-100 flex items-center justify-center shrink-0 relative group ${isEditing ? 'cursor-pointer' : ''}`}
           onClick={() => {
             if (isEditing && fileInputRef?.current) {
@@ -113,7 +112,7 @@ const ProfileSection = ({ user, isEditing, formData, setFormData, setIsEditing, 
             alt={user.fullname} 
             className={`h-full w-full object-cover ${isUploading ? 'opacity-50' : ''}`}
             onError={() => setImgError(true)}/>) : (
-          <div className={`h-full w-full bg-[#0a6ed1] flex items-center justify-center text-xl font-bold text-white ${isUploading ? 'opacity-50' : ''}`}>
+            <div className={`h-full w-full bg-[#0a6ed1] flex items-center justify-center text-xl font-bold text-white ${isUploading ? 'opacity-50' : ''}`}>
             {user?.shortName || "U"}
           </div>
         )}
@@ -135,30 +134,33 @@ const ProfileSection = ({ user, isEditing, formData, setFormData, setIsEditing, 
         onChange={handleFileChange} 
       />
       <div>
-        <h2 className="font-bold text-zinc-800">{user?.fullname}</h2>
-        <span className="text-xs text-[#0a6ed1] bg-blue-50 px-2 py-0.5 rounded flex items-center gap-1 w-fit"><ShieldCheck size={12} /> {user?.role}</span>
+        <h2 className="font-bold text-zinc-900 dark:text-zinc-100">{user?.fullname}</h2>
+        <span className="text-xs text-[#0a6ed1] dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded flex items-center gap-1 w-fit"><ShieldCheck size={12} /> {user?.role}</span>
       </div>
     </div>
 
     {isEditing ? (
       <div className="space-y-4">
-        <div>
-          <label className="text-[11px] text-zinc-500 uppercase tracking-wide block mb-1">Họ tên</label>
-          <SapInput icon={User} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-        </div>
-        <div>
-          <label className="text-[11px] text-zinc-500 uppercase tracking-wide block mb-1">Email</label>
-          <SapInput icon={Mail} value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
-        </div>
-        <div>
-          <label className="text-[11px] text-zinc-500 uppercase tracking-wide block mb-1">SĐT</label>
-          <SapInput icon={Phone} value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
-        </div>
+        {/* Input Section */}
+        {['name', 'email', 'phone'].map((field) => (
+          <div key={field}>
+            <label className="text-[11px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">
+              {field === 'name' ? 'Họ tên' : field === 'email' ? 'Email' : 'SĐT'}
+            </label>
+            <SapInput 
+              icon={field === 'name' ? User : field === 'email' ? Mail : Phone} 
+              value={formData[field as keyof typeof formData]} 
+              onChange={(e: any) => setFormData({...formData, [field]: e.target.value})} 
+            />
+          </div>
+        ))}
         
-        <div className="flex gap-3 pt-4 border-t border-zinc-100">
-          {/* Sử dụng SapButton */}
+        <div className="flex gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
           <SapButton onClick={onSave} isLoading={isPending}>Lưu thay đổi</SapButton>
-          <button onClick={(e) => { e.stopPropagation(); setIsEditing(false); }} className="px-6 py-2.5 bg-zinc-100 hover:text-red-600 hover:bg-red-50 hover:border-red-200 text-zinc-700 rounded-lg text-sm font-medium transition-colors border border-zinc-200">
+          <button 
+            onClick={(e) => { e.stopPropagation(); setIsEditing(false); }} 
+            className="px-6 py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 text-zinc-700 dark:text-zinc-300 rounded-lg text-sm font-medium transition-colors border border-zinc-200 dark:border-zinc-600"
+          >
             Hủy
           </button>
         </div>
@@ -169,7 +171,11 @@ const ProfileSection = ({ user, isEditing, formData, setFormData, setIsEditing, 
         <InfoItem icon={Mail} label="Địa chỉ Email" value={user?.email || "Chưa cập nhật"} />
         <InfoItem icon={Phone} label="Số điện thoại" value={user?.phone || "Chưa cập nhật"} />
         <InfoItem icon={Building} label="Phòng ban" value={user?.department || "N/A"} />
-        <button onClick={(e) => { e.stopPropagation(); setIsEditing(true); }} className="mt-2 w-full border border-[#0a6ed1] text-[#0a6ed1] h-10 rounded text-sm font-medium hover:bg-blue-50 transition-colors">
+        
+        <button 
+          onClick={(e) => { e.stopPropagation(); setIsEditing(true); }} 
+          className="mt-2 w-full border border-[#0a6ed1] dark:border-blue-500 text-[#0a6ed1] dark:text-blue-400 h-10 rounded text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+        >
           Chỉnh sửa thông tin
         </button>
       </div>
@@ -185,11 +191,13 @@ const InputItem = ({ label, value, onChange }: any) => (
 );
 
 const InfoItem = ({ icon: Icon, label, value }: any) => (
-  <div className="flex items-center gap-4 p-4 bg-white border border-zinc-200 rounded-lg">
-    <Icon className="text-zinc-400" size={18} />
+  // Thay bg-white bằng màu nền động theo theme
+  <div className="flex items-center gap-4 p-4 bg-[var(--color-background)] border border-zinc-200 dark:border-zinc-700 rounded-lg transition-colors">
+    <Icon className="text-zinc-400 dark:text-zinc-500" size={18} />
     <div>
       <p className="text-[10px] text-zinc-400 uppercase tracking-wider">{label}</p>
-      <p className="text-sm font-medium text-zinc-700">{value}</p>
+      {/* Thay text-zinc-700 bằng màu chữ phù hợp với nền tối */}
+      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">{value}</p>
     </div>
   </div>
 );

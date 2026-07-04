@@ -19,7 +19,7 @@ export const SettingsContent = () => {
   const [activeTab, setActiveTab] = useState('general');
 
   return (
-    <div className="flex h-[400px] w-full text-sm">
+    <div className="flex h-[400px] w-full text-sm bg-[var(--color-background)] text-[var(--color-foreground)] transition-colors">
       {/* Sidebar chọn Tab */}
       <div className="w-1/3 border-r border-slate-200 dark:border-zinc-700 pr-4 space-y-1">
         {SETTINGS_TABS.map((tab) => (

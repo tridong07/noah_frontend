@@ -3,29 +3,24 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 export const DisplaySettings = () => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // useEffect này bắt buộc để tránh lỗi hydration (server/client mismatch)
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  if (!mounted) return null; // Tránh render sai theme khi server đang load
+  if (!mounted) return <div className="w-8 h-8 rounded-full bg-zinc-700 animate-pulse" />;
 
   return (
-    <div className="p-4">
-      <h3 className="font-bold mb-4">Hiển thị</h3>
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input 
-          type="checkbox" 
-          // resolvedTheme giúp lấy theme thực tế đang áp dụng (kể cả khi theme là 'system')
-          checked={resolvedTheme === 'dark'}
-          onChange={(e) => setTheme(e.target.checked ? 'dark' : 'light')}
-          className="w-4 h-4"
-        />
-        <span>Chế độ tối (Dark Mode)</span>
-      </label>
-    </div>
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input 
+        type="checkbox"
+        // Kiểm tra xem thực tế đang là dark không
+        checked={resolvedTheme === 'dark'}
+        // Khi nhấn, ép buộc theme thành 'dark' hoặc 'light'
+        // Việc này sẽ ghi đè trạng thái 'system' trong localStorage
+        onChange={(e) => setTheme(e.target.checked ? 'dark' : 'light')}
+      />
+      <span>Chế độ tối</span>
+    </label>
   );
 };

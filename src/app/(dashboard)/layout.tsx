@@ -20,21 +20,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans transition-colors">
-      <header className="bg-[#1d2d3d] dark:bg-zinc-900 text-white px-6 py-2.5 flex items-center justify-between shadow-md sticky top-0 z-40 border-b border-zinc-800">
+    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-foreground)] font-sans transition-colors duration-300">
+      <header className="bg-[#1d2d3d] dark:bg-zinc-900 text-white px-6 py-2.5 flex items-center justify-between shadow-md sticky top-0 z-40 border-b border-zinc-800 transition-colors">
         <div className="flex items-center gap-4">
           <div className="font-bold text-lg text-[#f0b400]">SAP</div>
           <span className="border-l border-white/20 pl-4 text-sm font-light opacity-90">Enterprise System</span>
         </div>
         
         <div className="flex items-center gap-6">
-          <div className="hidden md:flex items-center bg-white/10 rounded-full px-3 py-1">
-            <Search size={14} />
-            <input className="bg-transparent border-none outline-none text-xs ml-2 w-32 placeholder-white/50" placeholder="Search..." />
+          <div className="hidden md:flex items-center bg-white/10 dark:bg-zinc-800 rounded-full px-3 py-1 transition-colors">
+            <Search size={14} className="text-white/70" />
+            <input className="bg-transparent border-none outline-none text-xs ml-2 w-32 placeholder-white/50 dark:placeholder-zinc-400 text-white" placeholder="Search..."/>
           </div>
           
           <LanguageSwitcher />
-          <button className="hover:text-[#4db1ff] transition-colors"><Bell size={18} /></button>
+          <button className="hover:text-[#4db1ff] dark:hover:text-blue-400 transition-colors">
+            <Bell size={18} />
+          </button>
           <UserMenu onOpenModal={openModal} />
         </div>
       </header>
