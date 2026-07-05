@@ -11,6 +11,7 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
   const [stack, setStack] = useState<MenuNode[]>([]);
   const clickTimer = useRef<NodeJS.Timeout | null>(null);
   const { show } = useNotification();
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
   // activeGroup luôn là phần tử cuối của stack
   const activeGroup = stack.length > 0 ? stack[stack.length - 1] : null;
@@ -43,6 +44,15 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
     });
   };
 
+  const toggleCollapse = (menuNo: string) => {
+    setCollapsedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(menuNo)) next.delete(menuNo);
+      else next.add(menuNo);
+      return next;
+    });
+  };
+
   const handleTileClick = (item: MenuNode) => {
     const isPathValid = (item: MenuNode) => {
       // Ví dụ: kiểm tra nếu cả winNo và menuNo đều trống thì coi là không tồn tại
@@ -56,7 +66,7 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
         show("Chức năng này hiện chưa được cấu hình hoặc không tồn tại.", "Thông báo", "error");
         return;
       }
-      item.winNo ? router.push(`/app/${item.winNo.toLowerCase()}`) : router.push(`/home/${item.menuNo}`);
+      item.winNo ? router.push(`/modules/${item.winNo.toLowerCase()}`) : router.push(`/home/${item.menuNo}`);
       return;
     }
 
@@ -70,7 +80,7 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
           return;
         }
         setBreadcrumbs(["Home", ...stack.map(s => s.menuName), item.menuName]);
-        item.winNo ? router.push(`/app/${item.winNo.toLowerCase()}`) : router.push(`/home/${item.menuNo}`);
+        item.winNo ? router.push(`/modules/${item.winNo.toLowerCase()}`) : router.push(`/home/${item.menuNo}`);
       }
     }, 250);
   };
@@ -100,6 +110,8 @@ export const useLaunchpad = (menuData: MenuNode[] | undefined, searchTerm: strin
     handleTileClick, 
     toggleFavorite, 
     popStack, 
+    toggleCollapse,
+    collapsedGroups,
     stack 
   };
 };

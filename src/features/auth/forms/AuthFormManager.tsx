@@ -14,24 +14,22 @@ export default function AuthFormManager() {
   const { t } = useTranslation(language);
   const router = useRouter();
   
-  // Dùng các giá trị từ hook
   const { mode, setMode, isLoading, executeAuthAction } = useAuthManager();
   
-  // Chỉ giữ lại các state local phục vụ cho Form input nếu cần
   const [username, setUsername] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Wrapper để gọi action và điều hướng sau khi xong
   const handleAuth = async (endpoint: string, payload: any, nextMode?: "login" | "reset") => {
     const data = await executeAuthAction(endpoint, payload, nextMode);
     if (data && endpoint === 'login') {
-      //router.push("/home");
       window.location.href = "/home";
     }
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    /* Thêm transition-colors để khi chuyển giữa các form (nếu có hiệu ứng background), 
+       nó sẽ mượt mà theo hệ thống theme của globals.css */
+    <div className="w-full max-w-sm mx-auto transition-colors duration-300">
       {mode === "login" && (
         <LoginForm 
           isLoading={isLoading} 

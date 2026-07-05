@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { KeyRound, ArrowLeft } from "lucide-react";
+import { KeyRound, Lock } from "lucide-react";
 import SapInput from "@/components/ui/SapInput";
 import SapButton from "@/components/ui/SapButton";
 
@@ -12,19 +12,33 @@ interface ResetProps {
 }
 
 export const ResetPasswordForm = ({ onReset, isLoading, t }: ResetProps) => (
-  <form onSubmit={onReset} className="flex flex-col gap-6 p-6 bg-white rounded-lg shadow-sm border border-slate-200">
+  <form 
+    onSubmit={onReset} 
+    className="flex flex-col gap-6 p-6 rounded-lg shadow-sm border border-[var(--color-border-subtle)] bg-[var(--color-card-bg)] transition-colors"
+  >
     <div className="space-y-1">
-      <h2 className="text-2xl font-bold text-[#222629]">
+      <h2 className="text-2xl font-bold text-[var(--color-foreground)]">
         {t("resetTitle", "auth", "Reset Password")}
       </h2>
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-[var(--color-text-muted)]">
         {t("resetSubtitle", "auth", "Enter the OTP and your new password")}
       </p>
     </div>
 
     <div className="space-y-4">
-      <SapInput icon={KeyRound} name="otp" placeholder={t("otpPlaceholder", "auth", "Enter OTP Code")} required />
-      <SapInput icon={Lock} type="password" name="password" placeholder={t("newPassPlaceholder", "auth", "New Password")} required />
+      <SapInput 
+        icon={KeyRound} 
+        name="otp" 
+        placeholder={t("otpPlaceholder", "auth", "Enter OTP Code")} 
+        required 
+      />
+      <SapInput 
+        icon={Lock} 
+        type="password" 
+        name="password" 
+        placeholder={t("newPassPlaceholder", "auth", "New Password")} 
+        required 
+      />
     </div>
     
     <SapButton type="submit" isLoading={isLoading} className="w-full">

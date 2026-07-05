@@ -22,12 +22,12 @@ export const AppTile = ({ item, context, isFavorite, onTileClick, onToggleFavori
       <motion.button
         layout
         onClick={() => onTileClick(item)}
-        className="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-200 shadow-sm hover:border-[#0a6ed1] transition-all text-left hover:bg-slate-50"
+        className="flex items-center gap-3 p-2 bg-[var(--color-card-bg)] rounded-lg border border-[var(--color-border-subtle)] shadow-sm hover:border-[var(--color-sap-blue)] transition-all text-left hover:bg-[var(--color-sap-blue)]/5"
       >
-        <div className="p-2 rounded-lg bg-slate-50 text-[#0a6ed1]">
+        <div className="p-2 rounded-lg bg-[var(--color-background)] text-[var(--color-sap-blue)]">
           <Icon size={16} />
         </div>
-        <span className="text-xs font-medium text-slate-700 truncate">{item.menuName}</span>
+        <span className="text-xs font-medium text-[var(--color-foreground)] truncate">{item.menuName}</span>
       </motion.button>
     );
   }
@@ -40,16 +40,17 @@ export const AppTile = ({ item, context, isFavorite, onTileClick, onToggleFavori
       exit={{ opacity: 0, scale: 0.8 }}
       key={`${context}-${item.menuNo}`}
       onClick={() => onTileClick(item)}
-      // SỬA LỖI TẠI ĐÂY: Dùng backtick `` để template literal hoạt động
-      className={`group relative flex flex-col items-center justify-center ${size === 'small' ? 'p-4' : 'p-6'} bg-white rounded-xl border border-slate-200 shadow-sm hover:border-[#0a6ed1] transition-all cursor-pointer`}
+      className={`group relative flex flex-col items-center justify-center ${size === 'small' ? 'p-4' : 'p-6'} bg-[var(--color-card-bg)] rounded-xl border border-[var(--color-border-subtle)] shadow-sm hover:border-[var(--color-sap-blue)] transition-all cursor-pointer`}
     >
       <div onClick={(e) => onToggleFavorite(e, item.menuNo)} className="absolute top-2 right-2 p-1 cursor-pointer">
-        <Star size={18} className={`${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-slate-300'}`} />
+        <Star size={18} className={`${isFavorite ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-[var(--color-border-subtle)]'}`} />
       </div>
-      <div className={`p-3 rounded-full bg-slate-50 text-[#0a6ed1] mb-2 group-hover:bg-[#0a6ed1] group-hover:text-white transition-all ${size === 'small' ? 'p-2' : 'p-3'}`}>
+      
+      <div className={`p-3 rounded-full bg-[var(--color-background)] text-[var(--color-sap-blue)] mb-2 group-hover:bg-[var(--color-sap-blue)] group-hover:text-white transition-all ${size === 'small' ? 'p-2' : 'p-3'}`}>
         <Icon size={size === 'small' ? 18 : 24} />
       </div>
-      <span className="text-xs font-medium text-slate-600 text-center line-clamp-2">{item.menuName}</span>
+      
+      <span className="text-xs font-medium text-[var(--color-foreground)] text-center line-clamp-2">{item.menuName}</span>
     </motion.button>
   );
 };

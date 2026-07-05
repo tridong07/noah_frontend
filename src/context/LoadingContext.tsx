@@ -14,8 +14,8 @@ export const LoadingProvider = ({ children }: { children: React.ReactNode }) => 
   return (
     <LoadingContext.Provider value={{ showLoading: () => setIsLoading(true), hideLoading: () => setIsLoading(false) }}>
       {isLoading && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 backdrop-blur-sm">
-          <Loader2 className="w-12 h-12 text-[#0a6ed1] animate-spin" />
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[var(--color-background)]/80 backdrop-blur-sm transition-colors">
+          <Loader2 className="w-12 h-12 text-[var(--color-sap-blue)] animate-spin" />
         </div>
       )}
       {children}

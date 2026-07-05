@@ -8,19 +8,22 @@ export const DisplaySettings = () => {
 
   useEffect(() => setMounted(true), []);
 
-  if (!mounted) return <div className="w-8 h-8 rounded-full bg-zinc-700 animate-pulse" />;
+  if (!mounted) return <div className="w-8 h-8 rounded-full bg-[var(--color-border-subtle)] animate-pulse" />;
 
   return (
-    <label className="flex items-center gap-2 cursor-pointer">
-      <input 
-        type="checkbox"
-        // Kiểm tra xem thực tế đang là dark không
-        checked={resolvedTheme === 'dark'}
-        // Khi nhấn, ép buộc theme thành 'dark' hoặc 'light'
-        // Việc này sẽ ghi đè trạng thái 'system' trong localStorage
-        onChange={(e) => setTheme(e.target.checked ? 'dark' : 'light')}
-      />
-      <span>Chế độ tối</span>
-    </label>
+    <div className="space-y-4">
+      <h3 className="font-bold text-[var(--color-foreground)]">Hiển thị</h3>
+      <label className="flex items-center gap-3 cursor-pointer group">
+        <input 
+          type="checkbox"
+          className="h-4 w-4 rounded border-[var(--color-border-subtle)] accent-[var(--color-sap-blue)] cursor-pointer"
+          checked={resolvedTheme === 'dark'}
+          onChange={(e) => setTheme(e.target.checked ? 'dark' : 'light')}
+        />
+        <span className="text-sm text-[var(--color-foreground)] group-hover:text-[var(--color-sap-blue)] transition-colors">
+          Chế độ tối (Dark Mode)
+        </span>
+      </label>
+    </div>
   );
 };

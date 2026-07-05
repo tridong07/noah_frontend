@@ -20,12 +20,14 @@ export const LanguageSwitcher = () => {
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-full 
-        /* Light Mode */
-        bg-white/10 hover:bg-white/20 text-white border border-white/10 
-        /* Dark Mode */
-        dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-300 dark:border-zinc-700
-        transition-all duration-200"
+      className="
+        flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-200
+        /* Sử dụng biến màu chung cho cả sáng và tối */
+        bg-[var(--color-card-bg)]
+        border border-[var(--color-border-subtle)]
+        text-[var(--color-foreground)]
+        hover:bg-[var(--color-border-subtle)]/30
+      "
       title={language === "vi" ? "Chuyển sang Tiếng Anh" : "Switch to Vietnamese"}
     >
       <Languages size={14} />

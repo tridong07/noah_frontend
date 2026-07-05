@@ -7,7 +7,6 @@ import { Settings, Shield, Monitor, Bell, Lock, Key, AlertCircle } from "lucide-
 import { useChangePassword } from "@/features/auth/hooks/useChangePassword";
 import { DisplaySettings } from "./DisplaySettings";
 
-// Định nghĩa các tab
 const SETTINGS_TABS = [
   { id: 'general', label: 'Cài đặt chung', icon: Settings },
   { id: 'security', label: 'Bảo mật', icon: Shield },
@@ -20,16 +19,16 @@ export const SettingsContent = () => {
 
   return (
     <div className="flex h-[400px] w-full text-sm bg-[var(--color-background)] text-[var(--color-foreground)] transition-colors">
-      {/* Sidebar chọn Tab */}
-      <div className="w-1/3 border-r border-slate-200 dark:border-zinc-700 pr-4 space-y-1">
+      {/* Sidebar */}
+      <div className="w-1/3 border-r border-[var(--color-border-subtle)] pr-4 space-y-1">
         {SETTINGS_TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
               activeTab === tab.id 
-                ? 'bg-[#eef5fd] dark:bg-zinc-800 text-[#0a6ed1] dark:text-blue-400 font-semibold' 
-                : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800'
+                ? 'bg-[var(--color-sap-blue)]/10 text-[var(--color-sap-blue)] font-semibold' 
+                : 'text-[var(--color-text-muted)] hover:bg-[var(--color-border-subtle)]/30'
             }`}
           >
             <tab.icon size={18} />
@@ -38,7 +37,7 @@ export const SettingsContent = () => {
         ))}
       </div>
 
-      {/* Nội dung Tab */}
+      {/* Content */}
       <div className="w-2/3 pl-6 overflow-y-auto">
         {activeTab === 'general' && <GeneralSettings />}
         {activeTab === 'security' && <SecuritySettings />}
@@ -49,13 +48,12 @@ export const SettingsContent = () => {
   );
 };
 
-// Các sub-components (Có thể tách file nếu code dài hơn)
 const GeneralSettings = () => (
-  <div className="space-y-4 ">
-    <h3 className="font-bold text-slate-800 dark:text-zinc-100">Cài đặt chung</h3>
+  <div className="space-y-4">
+    <h3 className="font-bold text-[var(--color-foreground)]">Cài đặt chung</h3>
     <label className="block">
-      <span className="text-xs text-slate-500 dark:text-zinc-400">Ngôn ngữ</span>
-      <select className="w-full mt-1 p-2 border rounded-md dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200">
+      <span className="text-xs text-[var(--color-text-muted)]">Ngôn ngữ</span>
+      <select className="w-full mt-1 p-2 rounded-md bg-[var(--color-input-bg)] border border-[var(--color-border-subtle)] text-[var(--color-foreground)]">
         <option>Tiếng Việt</option>
         <option>English</option>
       </select>
@@ -73,55 +71,27 @@ const SecuritySettings = () => {
       alert("Mật khẩu mới không khớp!");
       return;
     }
-    // Sau khi đổi thành công, tự động đóng form
-    changePassword(passwordData, { 
-      onSuccess: () => setIsChanging(false) 
-    });
+    changePassword(passwordData, { onSuccess: () => setIsChanging(false) });
   };
 
   if (isChanging) return (
     <div className="space-y-4 animate-in fade-in duration-300">
-      <h3 className="font-bold text-slate-800 dark:text-zinc-100">Đổi mật khẩu</h3>
-      
-      <SapInput 
-        icon={Key} 
-        type="password" 
-        placeholder="Mật khẩu hiện tại" 
-        value={passwordData.currentPassword}
-        onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})} 
-      />
-      <SapInput 
-        icon={Lock} 
-        type="password" 
-        placeholder="Mật khẩu mới" 
-        value={passwordData.newPassword}
-        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})} 
-      />
-      <SapInput 
-        icon={Lock} 
-        type="password" 
-        placeholder="Nhập lại mật khẩu mới" 
-        value={passwordData.confirmPassword}
-        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})} 
-      />
+      <h3 className="font-bold text-[var(--color-foreground)]">Đổi mật khẩu</h3>
+      <SapInput icon={Key} type="password" placeholder="Mật khẩu hiện tại" value={passwordData.currentPassword} onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})} />
+      <SapInput icon={Lock} type="password" placeholder="Mật khẩu mới" value={passwordData.newPassword} onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})} />
+      <SapInput icon={Lock} type="password" placeholder="Nhập lại mật khẩu mới" value={passwordData.confirmPassword} onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})} />
       
       <div className="flex gap-2 pt-2">
-        <SapButton onClick={(e) => { e.stopPropagation(); handleSave(); }} isLoading={isPending}>
-          Xác nhận đổi
-        </SapButton>
-        <button 
-          type="button"
-          onClick={(e) => { e.stopPropagation(); setIsChanging(false); }} 
-          className="px-6 py-2 bg-zinc-100 hover:text-red-600 hover:bg-red-50 hover:border-red-200 text-zinc-700 rounded-lg text-sm font-medium transition-colors border border-zinc-200 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-red-900/30"
-        >
+        <SapButton onClick={(e) => { e.stopPropagation(); handleSave(); }} isLoading={isPending}>Xác nhận đổi</SapButton>
+        <button type="button" onClick={(e) => { e.stopPropagation(); setIsChanging(false); }} className="px-6 py-2 bg-[var(--color-border-subtle)]/30 hover:bg-[var(--color-border-subtle)] text-[var(--color-foreground)] rounded-lg text-sm font-medium transition-colors border border-[var(--color-border-subtle)]">
           Hủy
         </button>
       </div>
 
       {isError && (
-        <div className="flex items-center gap-2 text-red-600 text-xs mt-2">
+        <div className="flex items-center gap-2 text-[var(--color-danger)] text-xs mt-2">
           <AlertCircle size={14} />
-          <span>{(error as any)?.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại"}</span>
+          <span>{(error as any)?.response?.data?.message || "Có lỗi xảy ra"}</span>
         </div>
       )}
     </div>
@@ -129,35 +99,22 @@ const SecuritySettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-bold text-slate-800 dark:text-zinc-100">Bảo mật</h3>
-      <button 
-        type="button"
-        onClick={(e) => { e.stopPropagation(); setIsChanging(true); }} 
-        className="text-[#0a6ed1] dark:text-blue-400 hover:underline text-xs font-medium block"
-      >
+      <h3 className="font-bold text-[var(--color-foreground)]">Bảo mật</h3>
+      <button type="button" onClick={(e) => { e.stopPropagation(); setIsChanging(true); }} className="text-[var(--color-sap-blue)] hover:underline text-xs font-medium block">
         Thay đổi mật khẩu
       </button>
-      <div className="p-3 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs rounded-md border border-amber-100 dark:border-amber-900/50">
+      <div className="p-3 bg-[var(--color-warning)]/10 text-[var(--color-warning)] text-xs rounded-md border border-[var(--color-warning)]/20">
         Lần thay đổi mật khẩu gần nhất: 15/06/2026
       </div>
     </div>
   );
 };
-/*
-const DisplaySettings = () => (
-  <div className="space-y-4">
-    <h3 className="font-bold text-slate-800">Hiển thị</h3>
-    <label className="flex items-center gap-2">
-      <input type="checkbox" /> <span>Chế độ tối (Dark Mode)</span>
-    </label>
-  </div>
-);*/
 
 const NotificationsSettings = () => (
   <div className="space-y-4">
-    <h3 className="font-bold text-slate-800 dark:text-zinc-100">Thông báo</h3>
-    <label className="flex items-center gap-2 text-slate-700 dark:text-zinc-300">
-      <input type="checkbox" defaultChecked className="dark:accent-blue-500" /> 
+    <h3 className="font-bold text-[var(--color-foreground)]">Thông báo</h3>
+    <label className="flex items-center gap-2 text-[var(--color-foreground)]">
+      <input type="checkbox" defaultChecked className="accent-[var(--color-sap-blue)]" /> 
       <span>Email thông báo</span>
     </label>
   </div>

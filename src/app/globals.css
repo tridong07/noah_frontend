@@ -1,24 +1,44 @@
 @import "tailwindcss";
 
 @theme {
-  /* Định nghĩa các biến màu dùng chung cho Tailwind */
+  /* --- Màu chủ đạo (Brand Colors) --- */
+  --color-sap-blue: #0a6ed1;
+  --color-sap-blue-hover: #085caf;
+
+  /* --- Màu nền và Chữ (Semantic Colors) --- */
   --color-background: #ffffff;
   --color-foreground: #171717;
+
+  /* --- Màu các thành phần UI --- */
+  --color-card-bg: #ffffff;
+  --color-border-subtle: #e4e4e7;
+  --color-input-bg: #ffffff;
 }
 
-/* Định nghĩa Dark Mode */
+/* --- Dark Mode Configuration --- */
 .dark {
+  /* Màu chủ đạo cho Dark Mode */
+  --color-sap-blue: #1d7add;
+  --color-sap-blue-hover: #268aff;
+
+  /* Background và Foreground Dark */
   --color-background: #0a0a0a;
   --color-foreground: #ededed;
+
+  /* Các thành phần UI cho Dark Mode */
+  --color-card-bg: #18181b;
+  --color-border-subtle: #27272a;
+  --color-input-bg: #18181b;
 }
 
 @layer base {
   html {
-    /* Đảm bảo transition mượt mà khi chuyển theme */
+    /* Đảm bảo chuyển đổi theme mượt mà */
     @apply transition-colors duration-300;
   }
 
   body {
+    /* Áp dụng nền và chữ mặc định từ biến */
     @apply bg-[var(--color-background)] text-[var(--color-foreground)] transition-colors duration-300;
   }
 }
