@@ -42,3 +42,4 @@
     @apply bg-[var(--color-background)] text-[var(--color-foreground)] transition-colors duration-300;
   }
 }
+
