@@ -22,7 +22,8 @@ export async function middleware(request: NextRequest) {
   const isProtectedPage = pathname.startsWith("/home") || 
                           pathname.startsWith("/dashboard") || 
                           pathname.startsWith("/hr") || 
-                          pathname.startsWith("/workflow");
+                          pathname.startsWith("/workflow") || 
+                          pathname.startsWith("/modules");
 
   // Nếu là trang bảo mật mà chưa đăng nhập -> Login
   if (isProtectedPage && !isTokenValid) {
