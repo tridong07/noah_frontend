@@ -1,0 +1,110 @@
+<div class="space-y-1 select-none">
+  <!-- Dynamic Menu Item Container -->
+  <div 
+    [id]="'menu-item-' + item.id"
+    (click)="toggleExpand($event)"
+    [ngClass]="{
+      'bg-indigo-50/90 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 font-semibold border border-indigo-100 dark:border-indigo-800/40': isExpanded && hasChildren(item),
+      'bg-indigo-600 text-white font-semibold shadow-sm dark:bg-indigo-600 dark:text-white': isActive && !hasChildren(item),
+      'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-indigo-600 dark:hover:text-white': !(isExpanded && hasChildren(item)) && !isActive
+    }"
+    class="group relative flex items-center justify-between px-2 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 cursor-pointer"
+  >
+    
+    <!-- Left Section: Icon + Title -->
+    <div class="flex items-center gap-1.5 min-w-0 flex-1">
+      <!-- Icon Folder (Menu Cha) / Icon Dot (Menu Lá) -->
+      @if (hasChildren(item)) {
+        <svg 
+          [ngClass]="{
+            'text-indigo-600 dark:text-indigo-400': isExpanded,
+            'text-slate-400 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300': !isExpanded
+          }"
+          class="w-4 h-4 transition-colors flex-shrink-0" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
+      } @else {
+        <span 
+          [ngClass]="{
+            'bg-white dark:bg-white': isActive,
+            'bg-slate-400 dark:bg-slate-500 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-400': !isActive
+          }"
+          class="w-1 h-1 rounded-full transition-colors ml-1 mr-0.5 flex-shrink-0">
+        </span>
+      }
+
+      <!-- Menu Name: Đổi thành line-clamp-2 và break-words để tối ưu độ dài -->
+      <span 
+        class="break-words line-clamp-2 leading-snug tracking-tight text-[11.5px]" 
+        [title]="getModuleName(item)"
+      >
+        {{ getModuleName(item) }}
+      </span>
+    </div>
+
+    <!-- Right Section: Favorite Star OR Arrow Indicator -->
+    <div class="flex items-center gap-0.5 flex-shrink-0 ml-1">
+      <!-- 🟢 Nút ⭐ Yêu Thích (Chỉ hiện ở Menu Lá) -->
+      @if (!hasChildren(item)) {
+        <button
+          type="button"
+          (click)="toggleFavorite($event)"
+          [title]="isFavorite ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'"
+          class="p-0.5 rounded transition-all duration-150"
+          [ngClass]="{
+            'opacity-100 text-amber-400 dark:text-amber-300': isFavorite,
+            'opacity-0 group-hover:opacity-100 text-slate-400 hover:text-amber-400 dark:text-slate-400 dark:hover:text-amber-300': !isFavorite,
+            'text-amber-300 hover:text-amber-200': isActive && isFavorite,
+            'text-white/70 hover:text-amber-300': isActive && !isFavorite
+          }"
+        >
+          <svg 
+            class="w-3.5 h-3.5 transition-transform duration-150 hover:scale-110" 
+            [attr.fill]="isFavorite ? 'currentColor' : 'none'"
+            stroke="currentColor" 
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" 
+                  d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.486-.425.878-.852.623l-4.697-2.807a.563.563 0 00-.58 0l-4.697 2.807c-.427.255-.968-.137-.852-.623l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+          </svg>
+        </button>
+      }
+
+      <!-- Arrow Indicator (Cho Menu Cha) -->
+      @if (hasChildren(item)) {
+        <svg 
+          [class.rotate-90]="isExpanded"
+          [ngClass]="{
+            'text-indigo-600 dark:text-indigo-400': isExpanded,
+            'text-slate-400 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300': !isExpanded
+          }"
+          class="w-3.5 h-3.5 transition-transform duration-200 flex-shrink-0" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      }
+    </div>
+  </div>
+
+  <!-- Recursive Sub-items List: Đã thu gọn lề thụt xuống pl-2 ml-2 -->
+  @if (isExpanded && hasChildren(item)) {
+    <div class="pl-2 space-y-1 border-l border-slate-200 dark:border-slate-700/60 ml-2 mt-1 transition-colors">
+      @for (child of getChildren(item); track trackByMenuId($index, child)) {
+        <app-sidebar-item 
+          [item]="child" 
+          [searchTerm]="searchTerm"
+          (menuSelect)="onChildSelect($event)"
+          (favoriteToggle)="onChildFavoriteToggle()">
+        </app-sidebar-item>
+      }
+    </div>
+  }
+</div>

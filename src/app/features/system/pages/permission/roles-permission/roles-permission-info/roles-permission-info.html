@@ -1,0 +1,84 @@
+<div class="h-full flex flex-col w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+  
+  <!-- THANH CÔNG CỤ (ACTION BUTTONS) -->
+  <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0 bg-slate-50 dark:bg-slate-900/80 z-10">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+        {{ isNewRole ? '➕ Thêm mới nhóm' : '✏️ Thông tin nhóm' }}
+      </h3>
+
+      <div class="flex items-center gap-2">
+        <ng-container *ngIf="!isEditing">
+            <button (click)="startCreate()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm">
+              <span>➕</span> Thêm mới
+            </button>
+            <button (click)="startEdit()" class="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer">
+              <span>✏️</span> Chỉnh sửa
+            </button>
+            <button (click)="deleteUser()" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm">
+              <span>🗑️</span> Xoá
+            </button>
+        </ng-container>
+
+        <ng-container *ngIf="isEditing">
+            <button (click)="cancelAction()" class="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-lg transition-colors cursor-pointer">
+              Hủy bỏ
+            </button>
+            <button (click)="saveChanges()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-md flex items-center gap-1.5 transition-colors cursor-pointer">
+              <span>💾</span> {{ isNewRole ? 'Tạo mới' : 'Lưu thay đổi' }}
+            </button>
+        </ng-container>
+      </div>
+  </div>
+
+  <!-- NỘI DUNG FORM INFO -->
+  <div class="flex-1 overflow-y-auto p-6">
+    <form [formGroup]="infoForm" class="space-y-6 max-w-5xl mx-auto">
+      
+      <!-- KHU VỰC 1: Các trường nhập liệu chính (Chia 2 cột giống hình mẫu) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        
+        <!-- Mã vai trò (Cột trái) -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-slate-700 dark:text-slate-300">
+            <span class="text-red-500 mr-1">*</span>Mã vai trò (ROLE_NO):
+          </label>
+          <input type="text" formControlName="roleNo" placeholder="Nhập mã vai trò..." class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 dark:text-slate-100 transition-all">
+        </div>
+
+        <!-- Tên vai trò (Cột phải) -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-slate-700 dark:text-slate-300">
+            <span class="text-red-500 mr-1">*</span>Tên vai trò (ROLE_NAME):
+          </label>
+          <input type="text" formControlName="roleName" placeholder="Nhập tên vai trò..." class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 dark:text-slate-100 transition-all">
+        </div>
+
+        <!-- Mô tả vai trò (Chiếm trọn 2 cột ở dưới) -->
+        <div class="space-y-1.5 md:col-span-2">
+          <label class="text-xs font-medium text-slate-700 dark:text-slate-300">
+            Mô tả vai trò (ROLE_DESC):
+          </label>
+          <textarea rows="2" formControlName="roleDesc" placeholder="Nhập mô tả chi tiết..." class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-800 dark:text-slate-100 transition-all resize-none"></textarea>
+        </div>
+
+      </div>
+
+      <!-- KHU VỰC 2: Thông tin hệ thống (Chia 2 cột dạng text tối giản ở dưới cùng) -->
+      <div class="pt-4 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-xs text-slate-500 dark:text-slate-400 font-mono">
+        
+        <!-- Cột trái hệ thống -->
+        <div class="space-y-1.5">
+          <div>用户ID (ROLE_ID): <span class="text-slate-700 dark:text-slate-300 font-semibold">{{ infoForm.get('roleId')?.value || 0 }}</span></div>
+          <div>賬號建立人ID (UPD_USER_ID): <span class="text-slate-700 dark:text-slate-300 font-semibold">{{ infoForm.get('updatedById')?.value | userName: allUsers }}</span></div>
+          <div>賬號變更人 (UPD_USER_NO): <span class="text-slate-700 dark:text-slate-300 font-semibold">{{ infoForm.get('updatedBy')?.value | userName: allUsers }}</span></div>
+          <div>賬號變更日 (UPD_TIMESTAMP): <span class="text-slate-700 dark:text-slate-300 font-semibold">{{ infoForm.get('updatedAt')?.value || '-' }}</span></div>
+        </div>
+
+        <!-- Cột phải hệ thống -->
+        <div class="space-y-1.5">
+          <div>Trạng thái hệ thống: <span class="text-slate-700 dark:text-slate-300 font-semibold">Hoạt động</span></div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

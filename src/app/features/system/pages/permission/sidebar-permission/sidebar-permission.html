@@ -1,0 +1,154 @@
+<aside class="w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col flex-shrink-0 shadow-sm h-full overflow-hidden">
+     
+  <!-- HEADER & Ô TÌM KIẾM CHUNG (CỐ ĐỊNH) -->
+  <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5 flex-shrink-0">
+    <!-- Tiêu đề lớn hiển thị tên chức năng/menu đang mở -->
+    <h1 class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate" [title]="currentMenuName">
+      {{ currentMenuName || 'Quản trị hệ thống' }}
+    </h1>
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm"
+      placeholder="Tìm kiếm nhanh..." 
+      class="w-full px-3 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500 transition-all outline-none text-slate-800 dark:text-slate-100">
+  </div>
+
+  <!-- TAB CHUYỂN ĐỔI NHANH TRONG SIDEBAR: USER / ROLE / MENU (CỐ ĐỊNH) -->
+  <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 px-2 pt-2 gap-1 text-xs font-medium flex-shrink-0">
+    <button 
+      type="button"
+      (click)="changeTab('users')"
+      [ngClass]="activeSubTab === 'users' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+      class="flex-1 py-2 rounded-t-lg transition-all text-center">
+      Nhân viên
+    </button>
+    <button 
+      type="button"
+      (click)="changeTab('roles')"
+      [ngClass]="activeSubTab === 'roles' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+      class="flex-1 py-2 rounded-t-lg transition-all text-center">
+      Vai trò
+    </button>
+    <button 
+      type="button"
+      (click)="changeTab('menus')"
+      [ngClass]="activeSubTab === 'menus' ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+      class="flex-1 py-2 rounded-t-lg transition-all text-center">
+      Menu Tree
+    </button>
+  </div>
+
+  <!-- NỘI DUNG HIỂN THỊ THEO TAB ĐANG CHỌN (CHỈ VÙNG NÀY CÓ THANH CUỘN DỌC) -->
+  <div class="flex-1 overflow-y-auto p-2.5 space-y-1.5 custom-scrollbar text-xs">
+    
+    <!-- 1. TAB NHÂN VIÊN (USERS) -->
+    <ng-container *ngIf="activeSubTab === 'users'">
+      <div 
+        *ngFor="let user of filteredUsers"
+        (click)="userSelected.emit(user)"
+        [ngClass]="{
+          'bg-indigo-600 text-white shadow-md shadow-indigo-500/20': selectedUserId === user.USER_ID,
+          'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-200': selectedUserId !== user.USER_ID
+        }"
+        class="p-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-3">
+        
+        <div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0 font-bold text-xs relative">
+          <img 
+            *ngIf="user.USER_AVATAR_URL" 
+            [src]="avatarBaseUrl + user.USER_AVATAR_URL" 
+            (error)="user.USER_AVATAR_URL = ''" 
+            class="w-full h-full object-cover">
+          <span *ngIf="!user.USER_AVATAR_URL">{{ user.USER_NAME?.charAt(0) || 'U' }}</span>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between">
+            <span class="font-bold truncate">{{ user.USER_NAME }}</span>
+            <span *ngIf="user.ADMIN_MK === 'Y'" [ngClass]="selectedUserId === user.USER_ID ? 'bg-white/20 text-white' : 'bg-amber-500/10 text-amber-600'" class="text-[9px] px-1.5 py-0.5 rounded font-semibold">Admin</span>
+          </div>
+          <div class="text-[11px] opacity-75 truncate">{{ user.USER_NO }} | {{ user.USER_EMAIL || 'N/A' }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredUsers.length === 0" class="text-center py-8 text-xs text-slate-400 space-y-1">
+        <p>Không tìm thấy nhân viên</p>
+        <p class="text-[10px] opacity-60">(Tổng số user nhận được: {{ users.length }})</p>
+      </div>
+    </ng-container>
+
+    <!-- 2. TAB VAI TRÒ (ROLES) -->
+    <ng-container *ngIf="activeSubTab === 'roles'">
+      <div 
+        *ngFor="let role of filteredRoles"
+        (click)="roleSelected.emit(role)"
+        [ngClass]="{
+          'bg-indigo-600 text-white shadow-md shadow-indigo-500/20': selectedRoleId === role.ROLE_ID,
+          'hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-200': selectedRoleId !== role.ROLE_ID
+        }"
+        class="p-3 rounded-xl cursor-pointer transition-all space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="font-bold truncate">🛡️ {{ role.ROLE_NAME }}</span>
+          <span class="text-[10px] opacity-80">{{ role.USER_COUNT }} users</span>
+        </div>
+        <p class="text-[11px] opacity-75 line-clamp-1">{{ role.ROLE_DESC || 'Không có mô tả' }}</p>
+      </div>
+      <div *ngIf="filteredRoles.length === 0" class="text-center py-8 text-slate-400">Không tìm thấy vai trò</div>
+    </ng-container>
+
+    <!-- 3. TAB CÂY MENU (MENU TREE) -->
+    <ng-container *ngIf="activeSubTab === 'menus'">
+      <div class="space-y-1">
+        <ng-container *ngTemplateOutlet="menuRecursiveTemplate; context: { $implicit: menuTree }"></ng-container>
+      </div>
+
+      <div *ngIf="menuTree.length === 0" class="text-center py-8 text-slate-400">Chưa có dữ liệu menu</div>
+    </ng-container>
+
+    <!-- Template đệ quy menu mặc định đóng toàn bộ -->
+    <ng-template #menuRecursiveTemplate let-nodes>
+      <div *ngFor="let item of nodes" class="space-y-1">
+        <div 
+          class="flex items-center justify-between px-2.5 py-2 rounded-xl transition-all duration-150 cursor-pointer group"
+          [style.padding-left.px]="((item.level || 0) * 14) + 10"
+          [ngClass]="{
+            'bg-indigo-600 text-white font-semibold shadow-sm': selectedMenuId === item.id,
+            'bg-indigo-50/80 dark:bg-slate-800/80 text-indigo-600 dark:text-indigo-400 font-medium': item.isFolder && item.expanded === true && item.children && item.children.length > 0 && selectedMenuId !== item.id,
+            'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60': selectedMenuId !== item.id && !(item.isFolder && item.expanded === true && item.children && item.children.length > 0)
+          }"
+          (click)="$event.stopPropagation(); item.isFolder && item.children && item.children.length > 0 ? (item.expanded = !item.expanded) : menuSelected.emit(item)">
+          
+          <div class="flex items-center gap-2 min-w-0 flex-1">
+            @if (item.isFolder && item.children && item.children.length > 0) {
+              <svg class="w-4 h-4 flex-shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              </svg>
+            } @else {
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 flex-shrink-0 ml-0.5"></span>
+            }
+            
+            <span class="font-mono text-[10px] opacity-70 flex-shrink-0">{{ item.menuNo }}</span>
+            <span class="truncate text-[11.5px]" [ngClass]="{'font-bold': item.isFolder}" [title]="getModuleName(item)">
+              {{ getModuleName(item) }}
+            </span>
+          </div>
+
+          <!-- Mũi tên chỉ xoay khi item.expanded === true -->
+          @if (item.isFolder && item.children && item.children.length > 0) {
+            <svg [class.rotate-90]="item.expanded === true"
+                 class="w-3.5 h-3.5 transition-transform duration-200 flex-shrink-0 opacity-70 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          }
+        </div>
+
+        <!-- Chỉ hiển thị children khi item.expanded === true -->
+        @if (item.isFolder && item.children && item.children.length > 0 && item.expanded === true) {
+          <div class="space-y-1">
+            <ng-container *ngTemplateOutlet="menuRecursiveTemplate; context: { $implicit: item.children }"></ng-container>
+          </div>
+        }
+      </div>
+    </ng-template>
+
+  </div>
+</aside>

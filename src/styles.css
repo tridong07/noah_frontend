@@ -1,3 +1,150 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+@variant dark (&:where(.dark, .dark *));
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155 !important; /* Slate-700 */
+  border-radius: 9999px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #475569 !important; /* Slate-600 */
+}
+
+/* Cho Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin !important;
+  scrollbar-color: #334155 transparent !important;
+}
+
+/* ==========================================================================
+   1. SWEETALERT2 POPUP (MODAL) - LIGHT & DARK MODE
+   ========================================================================== */
+.modern-swal-popup {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  padding: 24px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  font-family: inherit !important;
+}
+
+/* Dark Mode Popup */
+:is(.dark .modern-swal-popup) {
+  background-color: #0f172a !important; /* Slate-900 hoặc dùng #1e293b tùy theme */
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.modern-swal-title {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  padding: 12px 0 0 0 !important;
+  line-height: 1.5 !important;
+}
+
+:is(.dark .modern-swal-title) {
+  color: #f8fafc !important;
+}
+
+.modern-swal-actions {
+  gap: 12px !important;
+  margin-top: 20px !important;
+}
+
+/* Buttons Styling */
+.modern-swal-btn {
+  padding: 10px 24px !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  border-radius: 10px !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+  outline: none !important;
+}
+
+.modern-swal-btn-primary {
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3) !important;
+}
+
+.modern-swal-btn-primary:hover {
+  background-color: #4f46e5 !important;
+  transform: translateY(-1px);
+}
+
+.modern-swal-btn-danger {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3) !important;
+}
+
+.modern-swal-btn-danger:hover {
+  background-color: #dc2626 !important;
+  transform: translateY(-1px);
+}
+
+.modern-swal-btn-secondary {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+:is(.dark .modern-swal-btn-secondary) {
+  background-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+.modern-swal-btn-secondary:hover {
+  filter: brightness(0.9);
+}
+
+/* ==========================================================================
+   2. SWEETALERT2 TOAST (THÔNG BÁO GÓC TRÊN) - LIGHT & DARK MODE
+   ========================================================================== */
+.swal2-container.swal2-top-end .swal2-popup.swal2-toast.swal2-toast-custom {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 🟢 DARK MODE TOAST ÉP MÀU NỀN TỐI TẬP TRUNG */
+:is(.dark .swal2-container.swal2-top-end .swal2-popup.swal2-toast.swal2-toast-custom) {
+  background-color: #0f172a !important; /* Đổi thành #1e293b nếu bạn muốn tông nhạt hơn */
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.swal2-toast-custom .swal2-title {
+  color: #1e293b !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+}
+
+:is(.dark .swal2-toast-custom .swal2-title) {
+  color: #f8fafc !important;
+}
+
+/* Thanh Progress Bar */
+.swal2-toast-custom .swal2-timer-progress-bar {
+  background-color: #22c55e !important;
+}

@@ -1,0 +1,41 @@
+<div class="flex h-full w-full bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-hidden font-sans">
+  
+  <!-- Gọi Sidebar con đã tách -->
+  <app-sidebar-permission
+    [(activeSubTab)]="activeSubTab"
+    [users]="users"
+    [roles]="roles"
+    [menuTree]="menuTree"
+    [selectedUserId]="selectedUserId"
+    [selectedRoleId]="selectedRoleId"
+    [selectedMenuId]="selectedMenuId"
+    [currentMenuNo]="selectedMenu?.menuNo?? ''"
+    [currentMenuName]="selectedMenu?.name?? ''"
+    (userSelected)="onUserSelected($event)"
+    (roleSelected)="onRoleSelected($event)"
+    (menuSelected)="onMenuSelected($event)">
+  </app-sidebar-permission>
+
+  <!-- Khung nội dung chính ở bên phải -->
+  <main class="flex-1 flex flex-col h-full min-w-0 min-h-0 bg-slate-50/50 dark:bg-slate-950 overflow-hidden">
+    <app-user-permission 
+      *ngIf="activeSubTab === 'users'"
+      class="h-full flex flex-col min-h-0 overflow-hidden"
+      [selectedUser]="selectedUser"
+      [menuTree]="menuTree"
+      [roles]="usersRoles"
+      [allUsers]="users"
+      (saveChanges)="onUserSaved($event)">
+    </app-user-permission>
+
+    <app-roles-permission
+      *ngIf="activeSubTab === 'roles'"
+      class="h-full flex flex-col min-h-0 overflow-hidden"
+      [selectedRole] = "selectedRole"
+      [menuTree] = "rolemenuTree"
+      [rolesList]="roles"
+      [allUsers]="users"
+      (reloadRolesList)="onRolesSaved($event)">
+    </app-roles-permission>
+  </main>
+</div>

@@ -1,0 +1,41 @@
+/* Container bao ngoài để định vị góc trên bên phải */
+.language-selector-wrapper {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+}
+
+/* Khung pill chứa các nút ngôn ngữ */
+.language-selector {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f3f4f6; /* Màu nền xám nhạt */
+  padding: 4px;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+/* Style cho từng nút ngôn ngữ */
+.lang-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280; /* Màu chữ khi chưa active */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+  color: #111827;
+}
+
+/* Style khi ngôn ngữ được chọn */
+.lang-btn.active {
+  background-color: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,68 @@
+<div class="flex flex-col h-full w-full bg-slate-50 dark:bg-slate-950 overflow-hidden">
+  
+  <!-- HỆ THỐNG TAB -->
+  <div class="flex items-center px-4 pt-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 gap-2 flex-shrink-0">
+    <!-- Tab 1: Thiết lập vai trò hệ thống -->
+    <button 
+      type="button"
+      (click)="switchTab('info')"
+      [ngClass]="activeTab === 'info' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/30' : 'border-transparent text-slate-500 hover:text-slate-700'"
+      class="px-4 py-2 text-xs font-semibold border-b-2 rounded-t-lg transition-all flex items-center gap-1.5">
+      <span class="text-red-500">❤️</span> Thiết Lập Vai Trò Hệ Thống
+    </button>
+
+    <!-- Tab 2: Thiết lập quyền hạn -->
+    <button 
+      type="button"
+      (click)="switchTab('safe')"
+      [ngClass]="activeTab === 'safe' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/30' : 'border-transparent text-slate-500 hover:text-slate-700'"
+      class="px-4 py-2 text-xs font-semibold border-b-2 rounded-t-lg transition-all flex items-center gap-1.5">
+      <span class="text-emerald-500">🟢</span> Thiết Lập Quyền Hạn
+    </button>
+
+    <!-- Tab 3: Thiết lập thuộc tính -->
+    <button 
+      type="button"
+      (click)="switchTab('attribute')"
+      [ngClass]="activeTab === 'attribute' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/30' : 'border-transparent text-slate-500 hover:text-slate-700'"
+      class="px-4 py-2 text-xs font-semibold border-b-2 rounded-t-lg transition-all flex items-center gap-1.5">
+      <span class="text-red-600">♦</span> Thiết Lập Thuộc Tính
+    </button>
+  </div>
+
+  <!-- NỘI DUNG TỪNG TAB: ĐÃ SỬA LẠI ĐỂ KHÓA KHUNG VÀ CHO PHÉP TAB CON TỰ SCROLL -->
+  <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
+    <!-- Trường hợp chưa chọn nhân viên nào -->
+    <div *ngIf="!selectedRole" class="text-center py-20 text-xs text-slate-400 space-y-1">
+      <p class="text-base">👈</p>
+      <p>Vui lòng chọn một nhóm ở danh sách bên trái để xem chi tiết.</p>
+    </div>
+
+    <!-- Trường hợp đã chọn nhóm -> Hiển thị nội dung theo tab đang active -->
+    <div *ngIf="selectedRole" class="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <!-- Tab 1: Thông tin vai trò -->
+      <app-roles-permission-info 
+        *ngIf="activeTab === 'info'"
+        [roleData]="selectedRole"
+        [allUsers]="allUsers"
+        (save)="onSaveRole($event)"
+        (delete)="onDeleteRole($event)"
+        class="h-full flex flex-col min-h-0 overflow-hidden">
+      </app-roles-permission-info>
+
+      <!-- Tab 2: Thiết lập quyền hạn -->
+      <app-roles-permission-safe 
+        *ngIf="activeTab === 'safe'"
+        [role]="selectedRole"
+        [menuTree]="menuTree"
+        class="h-full flex flex-col min-h-0 overflow-hidden">
+      </app-roles-permission-safe>
+
+      <!-- Tab 3: Thiết lập thuộc tính -->
+      <div *ngIf="activeTab === 'attribute'" class="p-6 text-xs text-slate-500">
+        Nội dung thiết lập thuộc tính đang cập nhật...
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,95 @@
+<div class="workspace-tabs-container relative flex items-center bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 py-1.5 gap-1.5 flex-shrink-0">
+  
+  <!-- DANH SÁCH TAB NGANG (Có scroll ngang) -->
+  <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar flex-1 min-w-0 pr-2">
+    @for (tab of tabs$ | async; track tab.id) {
+      <div 
+        (click)="switchTab(tab)"
+        [ngClass]="{
+          'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm border-slate-200 dark:border-slate-700 font-semibold': (activeTabId$ | async) === tab.id,
+          'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-slate-800/50 border-transparent': (activeTabId$ | async) !== tab.id
+        }"
+        class="flex items-center gap-2 px-3 py-1.5 text-xs rounded-lg border transition-all cursor-pointer select-none group flex-shrink-0"
+      >
+        <!-- 🟢 Biểu tượng "Chưa lưu" (Chấm cam nhấp nháy nhẹ) trên tab ngang -->
+        @if (tab.isDirty) {
+          <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse flex-shrink-0" title="Có thay đổi chưa lưu"></span>
+        }
+
+        <span class="truncate max-w-[130px]">{{ getTabTitle(tab) }}</span>
+        
+        <!-- Nút đóng tab -->
+        <button 
+          type="button"
+          (click)="closeTab($event, tab)"
+          class="p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-red-500 transition-colors"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    } @empty {
+      <div class="text-[11px] text-slate-400 dark:text-slate-500 italic px-2 py-1 select-none">
+        Chưa có tab nào được mở. Chọn menu bên trái để bắt đầu.
+      </div>
+    }
+  </div>
+
+  <!-- NÚT & DROPDOWN HIỂN THỊ DANH SÁCH TOÀN BỘ TAB (Góc phải) -->
+  @if ((tabs$ | async)?.length; as totalTabs) {
+    <div class="relative flex-shrink-0 border-l border-slate-200 dark:border-slate-800 pl-2">
+      <button 
+        type="button"
+        (click)="toggleDropdown($event)"
+        [title]="'Xem tất cả ' + totalTabs + ' tab đang mở'"
+        class="flex items-center gap-1 px-2 py-1.5 text-xs rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors focus:outline-none shadow-sm"
+      >
+        <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <span class="font-semibold">{{ totalTabs }}</span>
+      </button>
+
+      <!-- Popup Dropdown danh sách tab -->
+      @if (isDropdownOpen) {
+        <div class="absolute right-0 top-full mt-1.5 w-64 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 py-1.5 max-h-80 overflow-y-auto custom-scrollbar">
+          <div class="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-700/60 mb-1">
+            Danh sách tab đang mở
+          </div>
+
+          @for (tab of tabs$ | async; track tab.id) {
+            <div 
+              (click)="selectTabFromDropdown(tab)"
+              [ngClass]="{
+                'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-medium': (activeTabId$ | async) === tab.id,
+                'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750': (activeTabId$ | async) !== tab.id
+              }"
+              class="flex items-center justify-between px-3 py-2 text-xs cursor-pointer transition-colors"
+            >
+              <div class="flex items-center gap-2 truncate pr-2">
+                <!-- 🟢 Biểu tượng "Chưa lưu" trong dropdown -->
+                @if (tab.isDirty) {
+                  <span class="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" title="Có thay đổi chưa lưu"></span>
+                }
+                <span class="truncate">{{ getTabTitle(tab) }}</span>
+              </div>
+              
+              <!-- Nút đóng nhanh trong dropdown -->
+              <button 
+                type="button"
+                (click)="closeTabFromDropdown($event, tab)"
+                class="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/40 text-slate-400 hover:text-red-500 transition-colors flex-shrink-0"
+              >
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+</div>

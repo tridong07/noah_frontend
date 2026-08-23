@@ -1,0 +1,202 @@
+<!-- SIDEBAR CONTAINER: Đã BỎ overflow-hidden để Flyout Popover hiển thị khi hover lúc thu nhỏ -->
+<aside 
+  class="bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 hidden md:flex flex-col h-full max-h-full transition-all duration-300 ease-in-out select-none relative z-30"
+  [ngClass]="{ 'w-64 py-4': !isCollapsed, 'w-16 py-3': isCollapsed }"
+>
+  
+  <!-- 1. HEADER SIDEBAR -->
+  <div class="flex items-center justify-between mb-4 min-h-[32px] flex-shrink-0 px-4">
+    
+    <!-- KHI MỞ RỘNG (!isCollapsed) -->
+    @if (!isCollapsed) {
+      <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate pr-1">
+        {{ 'SHARED.SIDEBAR.MENU' | translate: { default: 'THỰC ĐƠN' } }}: 
+        <span class="text-slate-700 dark:text-slate-200">
+          {{ launcherService.getTranslatedName((launcherService.state$ | async)?.activeModule) || 'CHUNG' }}
+        </span>
+      </div>
+
+      <!-- NHÓM NÚT CÔNG CỤ (Ghim & Thu gọn) -->
+      <div class="flex items-center space-x-1 flex-shrink-0">
+        <!-- 🟢 Nút Ghim Sidebar (Giúp giữ sidebar mở khi thao tác nhiều menu) -->
+        <button 
+          type="button"
+          (click)="togglePin()" 
+          [class.text-indigo-600]="isPinned"
+          [class.dark:text-indigo-400]="isPinned"
+          class="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+          [title]="isPinned ? 'Đang ghim (Sidebar không tự đóng khi chọn menu)' : 'Ghim sidebar (Giữ nguyên khi chọn menu)'"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+          </svg>
+        </button>
+
+        <!-- Nút thu gọn thực đơn -->
+        <button 
+          type="button"
+          (click)="toggleSidebar()" 
+          class="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+          title="Thu gọn thực đơn"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    } 
+    
+    <!-- KHI THU GỌN (isCollapsed) -->
+    @else {
+      <button 
+        type="button"
+        (click)="toggleSidebar()" 
+        class="w-full flex justify-center items-center p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+        [title]="'Mở rộng thực đơn: ' + (launcherService.getTranslatedName((launcherService.state$ | async)?.activeModule) || '')"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        </svg>
+      </button>
+    }
+
+  </div>
+
+  <!-- 2. Ô TÌM KIẾM & NÚT LỌC YÊU THÍCH -->
+  @if (!isCollapsed) {
+    <div class="flex items-center gap-1.5 mb-3 flex-shrink-0 px-4">
+      
+      <!-- Input Tìm Kiếm -->
+      <div class="relative flex-1">
+        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+
+        <input 
+          type="text" 
+          [(ngModel)]="sidebarSearchTerm" 
+          placeholder="{{ 'SHARED.SIDEBAR.SEARCH' | translate: { default: 'Lọc menu chức năng...' } }}" 
+          class="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition-all text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500">
+
+        @if (sidebarSearchTerm) {
+          <button 
+            type="button"
+            (click)="clearSidebarSearch()" 
+            class="absolute inset-y-0 right-0 pr-2 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        }
+      </div>
+
+      <!-- Nút Toggle Lọc Yêu Thích ⭐ -->
+      <button 
+        type="button"
+        (click)="toggleFavoriteFilter()"
+        [title]="onlyShowFavorites ? 'Hiển thị tất cả menu' : 'Chỉ hiển thị menu yêu thích'"
+        class="p-1.5 rounded-md border transition-all duration-200 flex-shrink-0 focus:outline-none"
+        [ngClass]="{
+          'bg-amber-500/10 border-amber-500/40 text-amber-500 dark:text-amber-400': onlyShowFavorites,
+          'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-slate-400 hover:text-amber-500 dark:hover:text-amber-400': !onlyShowFavorites
+        }"
+      >
+        <svg 
+          class="w-3.5 h-3.5 transition-transform duration-150 active:scale-90" 
+          [attr.fill]="onlyShowFavorites ? 'currentColor' : 'none'"
+          stroke="currentColor" 
+          stroke-width="2" 
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" 
+                d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.486-.425.878-.852.623l-4.697-2.807a.563.563 0 00-.58 0l-4.697 2.807c-.427.255-.968-.137-.852-.623l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+        </svg>
+      </button>
+
+    </div>
+  }
+
+  <!-- 3. CÂY MENU BÊN DƯỚI -->
+  <nav 
+    class="space-y-1.5 flex-1 min-h-0 custom-scrollbar"
+    [ngClass]="{ 'overflow-y-auto pl-4 pr-1': !isCollapsed, 'overflow-visible px-2': isCollapsed }"
+  >
+    
+    <!-- CHẾ ĐỘ MỞ RỘNG (!isCollapsed) -->
+    @if (!isCollapsed) {
+      @for (item of getFilteredSubMenus(launcherService.currentSubMenus$ | async); track trackByMenuId($index, item)) {
+        <app-sidebar-item 
+          [item]="item" 
+          [searchTerm]="sidebarSearchTerm"
+          (menuSelect)="onSubMenuSelect($event)"
+          (favoriteToggle)="onFavoriteToggled()">
+        </app-sidebar-item>
+      } @empty {
+        <div class="text-xs text-slate-400 dark:text-slate-500 italic py-6 text-center select-none pr-3">
+          @if (onlyShowFavorites) {
+            {{ 'SHARED.SIDEBAR.NO_FAVORITES' | translate: { default: 'Chưa có menu nào được thả tim ⭐' } }}
+          } @else if (sidebarSearchTerm) {
+            {{ 'SHARED.SIDEBAR.NO_RESULTS' | translate: { default: 'Không tìm thấy menu phù hợp.' } }}
+          } @else {
+            {{ 'SHARED.SIDEBAR.NO_SUBMENUS' | translate: { default: 'Không có menu con nào.' } }}
+          }
+        </div>
+      }
+    }
+
+    <!-- CHẾ ĐỘ THU GỌN (isCollapsed) -->
+    @else {
+      @for (item of (launcherService.currentSubMenus$ | async); track trackByMenuId($index, item)) {
+        
+        <div class="relative group/popover flex justify-center py-1">
+          
+          <!-- Icon Menu Nút Cha -->
+          <button 
+            type="button"
+            (click)="onSubMenuSelect(item)"
+            [title]="!hasChildren(item) ? launcherService.getTranslatedName(item) : ''"
+            class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+          >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+            </svg>
+          </button>
+
+          <!-- CHỈ HIỆN FLYOUT POPUP NẾU MENU CÓ CON (hasChildren) -->
+          @if (hasChildren(item)) {
+            <div class="absolute left-full top-0 pl-2 w-72 opacity-0 invisible group-hover/popover:opacity-100 group-hover/popover:visible transition-all duration-200 z-50 pointer-events-auto">
+              
+              <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-2xl overflow-hidden">
+                <div class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate pr-2">
+                    {{ launcherService.getTranslatedName(item) }}
+                  </span>
+                  <span class="text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/50 px-2 py-0.5 rounded-full">
+                    {{ getChildren(item).length }}
+                  </span>
+                </div>
+
+                <div class="p-2 max-h-96 overflow-y-auto space-y-1 custom-scrollbar pr-1">
+                  @for (sub of getChildren(item); track trackByMenuId($index, sub)) {
+                    <app-sidebar-item 
+                      [item]="sub" 
+                      [searchTerm]="sidebarSearchTerm"
+                      (menuSelect)="onSubMenuSelect($event)"
+                      (favoriteToggle)="onFavoriteToggled()">
+                    </app-sidebar-item>
+                  }
+                </div>
+              </div>
+
+            </div>
+          }
+
+        </div>
+      }
+    }
+
+  </nav>
+
+</aside>

@@ -1,0 +1,84 @@
+@if (state$ | async; as state) {
+  @if (state.isOpen) {
+    <!-- 1. BACKDROP LÀM MỜ NỀN (Phủ toàn màn hình z-[90]) -->
+    <div 
+      class="fixed inset-0 z-[90] bg-slate-900/20 dark:bg-slate-950/50 backdrop-blur-[1px] transition-opacity" 
+      (click)="onClose()">
+    </div>
+
+    <!-- 2. DROPDOWN LAUNCHER POPOVER (Nổi phía trên z-[100]) -->
+    <div 
+      class="absolute left-0 mt-3 w-80 sm:w-96 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-4 z-[100] animate-in fade-in zoom-in-95 duration-150 select-none transition-colors"
+      (click)="$event.stopPropagation()">
+      
+      <!-- HEADER POPUP -->
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-700/80">
+        <div>
+          <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm">
+            {{ 'SHARED.HEADER.BANNER.SUBTITLE_LAUNCHER_1' | translate: { default: 'Phân hệ ERP' } }}
+          </h3>
+          <p class="text-[11px] text-slate-400 dark:text-slate-400">
+            {{ 'SHARED.HEADER.BANNER.SUBTITLE_LAUNCHER_2' | translate: { default: 'Chuyển đổi không gian làm việc' } }}
+          </p>
+        </div>
+        <span class="text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/50 px-2.5 py-0.5 rounded-full">
+          {{ state.modules?.length || 0 }} Modules
+        </span>
+      </div>
+
+      <!-- DANH SÁCH MODULES -->
+      <div class="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar">
+        @for (app of state.modules; track app.id || $index) {
+          @let isActive = state.activeModule?.id === app.id;
+
+          <button 
+            type="button"
+            (click)="onSelectModule(app.id)"
+            [ngClass]="{
+              'bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-300 dark:border-indigo-600/80 ring-1 ring-indigo-200 dark:ring-indigo-700/50': isActive,
+              'border-slate-100 dark:border-slate-700/60 hover:border-indigo-200 dark:hover:border-indigo-600/50 hover:bg-slate-50 dark:hover:bg-slate-700/50': !isActive
+            }"
+            class="relative flex flex-col items-start p-3 rounded-xl border transition-all text-left group focus:outline-none">
+            
+            <!-- Badge "Đang active" ở góc card -->
+            @if (isActive) {
+              <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 shadow-sm"></span>
+            }
+
+            <!-- Icon Avatar / Mã Menu Badge -->
+            <div 
+              [ngClass]="{
+                'bg-indigo-600 text-white dark:bg-indigo-500': isActive,
+                'bg-indigo-100/80 dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white': !isActive
+              }"
+              class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs mb-2 transition-all group-hover:scale-105">
+              @if (app.icon) {
+                <i [class]="app.icon"></i>
+              } @else {
+                <span>{{ getModuleInitial(app) }}</span>
+              }
+            </div>
+
+            <!-- Tên Phân hệ -->
+            <span 
+              [class.text-indigo-900]="isActive"
+              [class.dark:text-indigo-200]="isActive"
+              class="font-semibold text-xs text-slate-700 dark:text-slate-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 line-clamp-1 transition-colors">
+              {{ getModuleName(app) }}
+            </span>
+
+            <!-- Mã Menu_No hiển thị -->
+            <span class="text-[10px] text-slate-400 dark:text-slate-400 mt-0.5">
+              {{ 'SHARED.HEADER.BANNER.MODULE_ID' | translate: { default: 'Mã' } }}: {{ getDisplayMenuCode(app) }}
+            </span>
+          </button>
+        } @empty {
+          <div class="col-span-2 py-8 text-center text-xs text-slate-400 dark:text-slate-400 italic">
+            {{ 'SHARED.HEADER.BANNER.NO_MODULES' | translate: { default: 'Chưa có phân hệ nào được phân quyền.' } }}
+          </div>
+        }
+      </div>
+
+    </div>
+  }
+}

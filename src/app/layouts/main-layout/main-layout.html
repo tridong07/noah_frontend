@@ -1,0 +1,21 @@
+<div class="h-screen w-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200 overflow-hidden">
+  <!-- 1. TOP HEADER BAR (Cố định chiều cao ở trên) -->
+  <app-header [currentUser]="currentUser" class="flex-shrink-0 z-40"></app-header>
+
+  <!-- 2. BODY AREA (Chiếm toàn bộ chiều cao còn lại và khóa tràn) -->
+  <div class="flex flex-1 min-h-0 overflow-hidden">
+    <!-- SIDEBAR MENU TREE (Không bị đẩy giãn ra ngoài màn hình) -->
+    <app-sidebar class="h-full flex-shrink-0 z-30"></app-sidebar>
+
+    <!-- CONTENT OUTLET (Scroll độc lập nếu trang nội dung dài) -->
+    <main class="flex-1 h-full min-h-0 flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
+      <!-- 🟢 THANH MULTI-TAB WORKSPACE (Hiển thị danh sách các tab ngang) -->
+      <app-workspace-tabs class="flex-shrink-0 z-20"></app-workspace-tabs>
+
+      <!-- VÙNG HIỂN THỊ NỘI DUNG TAB -->
+      <div class="flex-1 min-h-0 overflow-hidden flex flex-col">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

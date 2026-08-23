@@ -1,0 +1,141 @@
+<div class="h-full flex flex-col w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 overflow-hidden pt-2 border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+  <!-- 1. HEADER CỐ ĐỊNH Ở TRÊN -->
+  <div class="flex items-center justify-between px-6 py-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0 bg-slate-100 dark:bg-slate-900 z-10">
+    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+      {{ isNewUser ? '➕ Thêm mới nhân sự' : '✏️ Thông tin tài khoản' }}
+    </h3>
+    
+    <div class="flex items-center gap-2">
+      <ng-container *ngIf="!isEditing">
+        <button (click)="startCreate.emit()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-colors">
+          <span>➕</span> Thêm mới
+        </button>
+        <button (click)="startEdit.emit()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-colors">
+          <span>✏️</span> Chỉnh sửa
+        </button>
+        <button (click)="deleteUser.emit()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1 transition-colors">
+          <span>🗑️</span> Xoá
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="isEditing">
+        <button (click)="cancelAction.emit()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-lg transition-colors">
+          Hủy bỏ
+        </button>
+        <button (click)="saveUserChanges.emit()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-md flex items-center gap-1.5 transition-colors">
+          <span>💾</span> {{ isNewUser ? 'Tạo mới' : 'Lưu thay đổi' }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- 2. VÙNG NỘI DUNG CUỘN ĐỘC LẬP BÊN DƯỚI -->
+  <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-6 space-y-5">
+    
+    <!-- PHẦN UPLOAD & HIỂN THỊ AVATAR -->
+    <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+      <div class="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0 font-bold text-base relative shadow-inner border border-slate-300 dark:border-slate-700">
+        <img *ngIf="selectedUser.USER_AVATAR_URL" [src]="avatarBaseUrl + selectedUser.USER_AVATAR_URL" (error)="selectedUser.USER_AVATAR_URL = ''" class="w-full h-full object-cover">
+        <span *ngIf="!selectedUser.USER_AVATAR_URL" class="text-slate-600 dark:text-slate-300">{{ selectedUser.USER_NAME?.charAt(0) || 'U' }}</span>
+      </div>
+      <div class="flex-1 space-y-1">
+        <label class="block text-xs font-bold text-slate-700 dark:text-slate-200">Ảnh đại diện (Avatar)</label>
+        <input [disabled]="!isEditing" type="file" (change)="avatarSelected.emit($event)" accept="image/*" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-600 dark:file:bg-indigo-950 dark:file:text-indigo-400 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+        <p class="text-[10px] text-slate-500">Hỗ trợ định dạng JPG, PNG, GIF. Kích thước tối đa 2MB.</p>
+      </div>
+    </div>
+
+    <!-- Form Chi tiết thông tin nhân sự -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-xs">
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium"><span class="text-red-500">*</span> 廠別 (FACT_NO):</label>
+        <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.FACT_NO" placeholder="ALL" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+        <p-multiSelect 
+          [options]="factoryList" 
+          formControlName="FACT_NO" 
+          optionLabel="FACT_NAME" 
+          optionValue="FACT_NO"
+          placeholder="Chọn nhà máy..."
+          [style]="{'width':'100%'}"
+          styleClass="w-full bg-slate-900 border border-slate-700 rounded-lg">
+        </p-multiSelect>
+      </div>
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium"><span class="text-red-500">*</span> 用戶代號 (USER_NO):</label>
+        <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.USER_NO" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+      </div>
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium"><span class="text-red-500">*</span> 用戶名稱 (USER_NAME):</label>
+        <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.USER_NAME" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+      </div>
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium"><span class="text-red-500">*</span> 用戶密碼 (USER_PWD):</label>
+        <input [disabled]="!isEditing" type="password" [(ngModel)]="selectedUser.USER_PWD" placeholder="••••••••" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+        <span class="text-[10px] text-slate-500 mt-0.5 block">用户密码不能小於6個字符。</span>
+      </div>
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium">用戶EMAIL (USER_EMAIL):</label>
+        <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.USER_EMAIL" placeholder="Nhập email..." class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+      </div>
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium">聯系電話1 (TEL1):</label>
+        <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.TEL1" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+      </div>
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium">聯系電話2 (TEL2):</label>
+        <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.TEL2" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+      </div>
+      <div class="flex items-center gap-6 pt-5">
+        <div class="flex items-center gap-3">
+          <label class="text-slate-500 dark:text-slate-400 font-medium">性別 (SEX):</label>
+          <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300"><input [disabled]="!isEditing" type="radio" name="sex" [(ngModel)]="selectedUser.SEX" value="M" class="accent-indigo-600"> 男</label>
+          <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300"><input [disabled]="!isEditing" type="radio" name="sex" [(ngModel)]="selectedUser.SEX" value="F" class="accent-indigo-600"> 女</label>
+        </div>
+        <div class="flex items-center gap-2 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-900/50">
+          <input [disabled]="!isEditing" type="checkbox" [(ngModel)]="selectedUser.USE_STATUS" [checked]="selectedUser.USE_STATUS === 'Y'" (change)="selectedUser.USE_STATUS = selectedUser.USE_STATUS === 'Y' ? null : 'Y'" class="w-4 h-4 accent-amber-600 rounded">
+          <label class="font-bold text-amber-600 dark:text-amber-400 text-xs">停用 (USE_STATUS)</label>
+        </div>
+      </div>
+      <div class="col-span-2 flex flex-col gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+          <input [disabled]="!isEditing" type="checkbox" [(ngModel)]="selectedUser.ADMIN_MK" [checked]="selectedUser.ADMIN_MK === 'Y'" (change)="selectedUser.ADMIN_MK = selectedUser.ADMIN_MK === 'Y' ? 'N' : 'Y'" class="w-4 h-4 accent-indigo-600 rounded">
+          <label class="font-bold text-slate-800 dark:text-slate-200">管理員 (ADMIN_MK):</label>
+          <span class="text-[11px] text-red-500 dark:text-red-400 font-medium">一旦授予管理員權限, 用戶將有系統所有權限。</span>
+        </div>
+      </div>
+      <div>
+        <label class="block text-slate-500 dark:text-slate-400 mb-1 font-medium">單位代號 (DEPT_NO):</label>
+        <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.DEPT_NO" class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center gap-2">
+          <input [disabled]="!isEditing" type="checkbox" [(ngModel)]="selectedUser.MAC_MK" [checked]="selectedUser.MAC_MK === 'Y'" (change)="selectedUser.MAC_MK = selectedUser.MAC_MK === 'Y' ? 'N' : 'Y'" class="w-4 h-4 accent-indigo-600 rounded">
+          <span class="font-medium text-slate-700 dark:text-slate-300">MAC管控 (MAC_MK - Lọc theo IP đăng nhập)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" [value]="selectedUser.IP_ADDRESS ? 'IP Máy: ' + selectedUser.IP_ADDRESS : 'Chưa có IP đăng nhập'" disabled class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-950/60 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
+          <input [disabled]="!isEditing" type="text" [(ngModel)]="selectedUser.MAC_ADDRESS" placeholder="Địa chỉ MAC liên kết..." class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 outline-none focus:border-indigo-500 transition-colors disabled:opacity-60">
+        </div>
+      </div>
+    </div>
+
+    <!-- PHẦN METADATA -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800/80">
+      <div class="space-y-1.5">
+        <p>用戶ID (USER_ID): <span class="font-mono font-bold text-slate-700 dark:text-slate-200">{{ selectedUser.USER_ID | userName: allUsers }}</span></p>
+        <p>登錄IP (IP_ADDRESS): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.IP_ADDRESS || 'N/A' }}</span></p>
+        <p>賬號建立人ID (UPD_USER_ID): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.UPD_USER_ID | userName: allUsers }}</span></p>
+        <p>賬號更改人 (UPD_USER_NO): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.UPD_USER_NO | userName: allUsers }}</span></p>
+        <p>賬號更改日 (UPD_TIMESTAMP): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.UPD_TIMESTAMP }}</span></p>
+      </div>
+      <div class="space-y-1.5">
+        <p>開始使用時間 (PWD_START_DATE): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.PWD_START_DATE | date:'yyyy/MM/dd HH:mm:ss' }}</span></p>
+        <p>密碼有效期 (PWD_STOP_DATE): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.PWD_STOP_DATE | date:'yyyy/MM/dd HH:mm:ss' }}</span></p>
+        <p>密碼修改日期 (PWD_CHANGE_DATE): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.PWD_CHANGE_DATE | date:'yyyy/MM/dd HH:mm:ss' }}</span></p>
+        <p>最后使用日期 (LOGIN_DATE): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.LOGIN_DATE | date:'yyyy/MM/dd HH:mm:ss' }}</span></p>
+        <p>登錄錯誤次數 (LOGIN_ERR_TIMES): <span class="font-mono text-slate-700 dark:text-slate-200">{{ selectedUser.LOGIN_ERR_TIMES || '0' }}</span></p>
+      </div>
+    </div>
+    
+  </div>
+</div>

@@ -1,0 +1,368 @@
+<div class="min-h-screen w-full flex bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans relative transition-colors duration-200">
+  
+  <!-- BÊN TRÁI: Brand & Banner Quảng bá Hệ thống (Ẩn trên mobile) -->
+  <div class="hidden lg:flex lg:w-1/2 bg-slate-900 dark:bg-slate-950 text-white flex-col justify-between p-12 relative overflow-hidden border-r border-slate-800 dark:border-slate-800/80">
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-500/30">
+        E
+      </div>
+      <span class="text-xl font-bold tracking-wide text-white">ENTERPRISE<span class="text-indigo-400">HUB</span></span>
+    </div>
+
+    <div class="relative z-10 my-auto max-w-lg">
+      <span class="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-xs font-semibold text-indigo-300 mb-4 uppercase tracking-wider">
+        {{ 'AUTH.BANNER.SUBTITLE' | translate: { default: 'Nền Tảng Quản Trị Doanh Nghiệp Toàn Diện' } }}
+      </span>
+      <h1 class="text-4xl font-extrabold leading-tight tracking-tight mb-4 text-white">
+        {{ 'AUTH.BANNER.TITLE' | translate: { default: 'Số Hóa Và Tối Ưu Hóa Vận Hành ERP' } }}
+      </h1>
+      <p class="text-slate-400 text-base leading-relaxed mb-8">
+        {{ 'AUTH.BANNER.DESC' | translate: { default: 'Tích hợp quản lý Nhân sự, Tác nghiệp, Tài chính và Báo cáo thông minh trên cùng một hệ thống tập trung.' } }}
+      </p>
+
+      <div class="grid grid-cols-3 gap-4 border-t border-slate-800 pt-6">
+        <div>
+          <p class="text-2xl font-bold text-indigo-400">99.9%</p>
+          <p class="text-xs text-slate-500 mt-1">
+            {{ 'AUTH.BANNER.STAT_UPTIME' | translate: { default: 'Độ ổn định hệ thống' } }}
+          </p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-indigo-400">SOC-2</p>
+          <p class="text-xs text-slate-500 mt-1">
+            {{ 'AUTH.BANNER.STAT_SECURITY' | translate: { default: 'Tiêu chuẩn bảo mật' } }}
+          </p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-indigo-400">24/7</p>
+          <p class="text-xs text-slate-500 mt-1">
+            {{ 'AUTH.BANNER.STAT_SUPPORT' | translate: { default: 'Hỗ trợ kỹ thuật IT' } }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative z-10 text-xs text-slate-500 flex justify-between items-center">
+      <span>{{ 'AUTH.BANNER.FOOTER_COPYRIGHT' | translate: { default: '© 2026 EnterpriseHub. Tất cả quyền được bảo lưu.' } }}</span>
+      <div class="flex space-x-4">
+        <a href="#" class="hover:text-slate-400 transition">
+          {{ 'AUTH.BANNER.PRIVACY' | translate: { default: 'Bảo mật' } }}
+        </a>
+        <a href="#" class="hover:text-slate-400 transition">
+          {{ 'AUTH.BANNER.TERMS' | translate: { default: 'Điều khoản' } }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BÊN PHẢI: Form Đăng nhập -->
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+    <div class="w-full max-w-md space-y-8">
+      
+      <!-- CỤM HEADER ĐÃ ĐƯỢC CHUẨN HÓA NÚT NGÔN NGỮ & DARK MODE -->
+      <div class="flex justify-between items-center">
+        <!-- LOGO & BRAND (Chỉ hiện trên mobile) -->
+        <div class="flex items-center space-x-2 lg:hidden">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">
+            E
+          </div>
+          <span class="font-bold text-slate-900 dark:text-white">ERP System</span>
+        </div>
+        
+        <!-- CỤM CÔNG CỤ: NGÔN NGỮ + DARK MODE (Nằm sát nhau ở góc phải) -->
+        <div class="ml-auto flex items-center space-x-2 text-xs font-medium">
+          <!-- 1. CHỌN NGÔN NGỮ (BẰNG HÀNG) -->
+          <div class="relative">
+            
+            <!-- TRƯỜNG HỢP 1: Tối đa 2 ngôn ngữ -> Hiển thị dạng Tabs -->
+            <div *ngIf="languages && languages.length === 2" class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700/80">
+              <button 
+                *ngFor="let lang of languages"
+                type="button"
+                (click)="switchLang(lang.LANG_NO || lang.code)"
+                class="px-2.5 py-1 text-xs rounded-md font-semibold transition-all duration-150 cursor-pointer"
+                [ngClass]="{
+                  'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-xs': isLangActive(lang.LANG_NO || lang.code),
+                  'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200': !isLangActive(lang.LANG_NO || lang.code)
+                }">
+                {{ (lang.LANG_NO || lang.code) | uppercase }}
+              </button>
+            </div>
+            <!-- TRƯỜNG HỢP 2: Nhiều hơn 2 ngôn ngữ -> Hiển thị dạng DROPDOWN -->
+            <div *ngIf="languages && languages.length > 2" class="relative inline-block text-left" #dropdownContainer>
+              <button 
+                type="button"
+                (click)="toggleLangDropdown()"
+                class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition focus:outline-none cursor-pointer">
+                
+                <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+
+                <span>{{ getSelectedLangLabel() }}</span>
+                
+                <svg class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" 
+                    [class.rotate-180]="isLangDropdownOpen" 
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <div 
+                *ngIf="isLangDropdownOpen"
+                class="absolute right-0 mt-1 w-36 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+                
+                <button 
+                  *ngFor="let lang of languages"
+                  type="button"
+                  (click)="selectLangFromDropdown(lang.LANG_NO || lang.code)"
+                  [class.bg-indigo-50]="isLangActive(lang.LANG_NO || lang.code)"
+                  [class.dark:bg-indigo-950/50]="isLangActive(lang.LANG_NO || lang.code)"
+                  [class.text-indigo-600]="isLangActive(lang.LANG_NO || lang.code)"
+                  [class.dark:text-indigo-400]="isLangActive(lang.LANG_NO || lang.code)"
+                  [class.font-bold]="isLangActive(lang.LANG_NO || lang.code)"
+                  class="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 flex items-center justify-between transition cursor-pointer">
+                  
+                  <span>{{ lang.LANG_NAME || lang.LANG_NO || lang.code }}</span>
+
+                  <svg *ngIf="isLangActive(lang.LANG_NO || lang.code)" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 2. NÚT CHUYỂN ĐỔI DARK / LIGHT MODE (BẰNG HÀNG SÁT BÊN) -->
+          <button 
+            type="button"
+            (click)="toggleDarkMode()" 
+            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200/70 dark:hover:bg-slate-700 transition focus:outline-none cursor-pointer"
+            [title]="themeService.isDarkMode() ? ('SHARED.THEME.DARK_1' | translate: { default: 'Giao diện tối' }) : ('SHARED.THEME.LIGHT_1' | translate: { default: 'Giao diện sáng' })">
+            
+            <!-- Icon Mặt trời (Light Mode) -->
+            <svg *ngIf="!themeService.isDarkMode()" class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+
+            <!-- Icon Mặt trăng (Dark Mode) -->
+            <svg *ngIf="themeService.isDarkMode()" class="w-4 h-4 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+
+            <span>{{ themeService.isDarkMode() ? ('SHARED.THEME.DARK_2' | translate: { default: 'Tối' }) : ('SHARED.THEME.LIGHT_2' | translate: { default: 'Sáng' }) }}</span>
+          </button>
+
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          {{ 'AUTH.LOGIN.TITLE' | translate: { default: 'Đăng nhập Hệ thống' } }}
+        </h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          {{ 'AUTH.LOGIN.SUBTITLE' | translate: { default: 'Vui lòng nhập tài khoản ERP của bạn để tiếp tục' } }}
+        </p>
+      </div>
+
+      <!-- Alert thông báo lỗi đăng nhập -->
+      <div *ngIf="errorMessage" class="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-lg flex items-center space-x-2 text-red-600 dark:text-red-400 text-xs">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Form nhập liệu -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        
+        <!-- USERNAME -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+            {{ 'AUTH.LOGIN.USERNAME_LABEL' | translate: { default: 'Tài khoản / Mã nhân viên' } }}
+          </label>
+          <div class="relative">
+            <input 
+              type="text" 
+              formControlName="username"
+              [placeholder]="'AUTH.LOGIN.USERNAME_PLACEHOLDER' | translate: { default: 'Nhập tên tài khoản hoặc mã NV' }"
+              class="w-full px-4 py-3 rounded-lg border text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 bg-white dark:bg-slate-800/80 transition duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              [ngClass]="{
+                'border-red-500 focus:ring-red-500': loginForm.get('username')?.invalid && loginForm.get('username')?.touched,
+                'border-slate-300 dark:border-slate-700': !(loginForm.get('username')?.invalid && loginForm.get('username')?.touched)
+              }"
+            />
+          </div>
+          <p *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="text-xs text-red-500 dark:text-red-400 mt-1.5">
+            {{ 'AUTH.LOGIN.ERR_USERNAME_REQUIRED' | translate: { default: 'Vui lòng nhập tên tài khoản!' } }}
+          </p>
+        </div>
+
+        <!-- PASSWORD -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              {{ 'AUTH.LOGIN.PASSWORD_LABEL' | translate: { default: 'Mật khẩu' } }}
+            </label>
+            
+            <a href="#" (click)="openForgotPasswordModal($event)" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition">
+              {{ 'AUTH.LOGIN.FORGOT_PASSWORD' | translate: { default: 'Quên mật khẩu?' } }}
+            </a>
+          </div>
+          <div class="relative">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              formControlName="password"
+              placeholder="••••••••"
+              class="w-full px-4 py-3 rounded-lg border text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 bg-white dark:bg-slate-800/80 transition duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent pr-10"
+              [ngClass]="{
+                'border-red-500 focus:ring-red-500': loginForm.get('password')?.invalid && loginForm.get('password')?.touched,
+                'border-slate-300 dark:border-slate-700': !(loginForm.get('password')?.invalid && loginForm.get('password')?.touched)
+              }"
+            />
+            <button 
+              type="button" 
+              (click)="toggleShowPassword()" 
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1"
+            >
+              <svg *ngIf="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              <svg *ngIf="showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.023 10.023 0 013.682-.763c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m-8.918-8.918a3 3 0 104.243 4.243m-4.243-4.243L3 3l18 18"/></svg>
+            </button>
+          </div>
+          <p *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-xs text-red-500 dark:text-red-400 mt-1.5">
+            {{ 'AUTH.LOGIN.ERR_PASSWORD_LENGTH' | translate: { default: 'Mật khẩu phải có tối thiểu 6 ký tự!' } }}
+          </p>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" formControlName="rememberMe" class="w-4 h-4 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">
+              {{ 'AUTH.LOGIN.REMEMBER_ME' | translate: { default: 'Ghi nhớ đăng nhập' } }}
+            </span>
+          </label>
+        </div>
+
+        <button 
+          type="submit" 
+          [disabled]="isLoading"
+          class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white font-semibold text-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer"
+        >
+          <svg *ngIf="isLoading" class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>
+            {{ (isLoading ? ('AUTH.LOGIN.BTN_AUTHENTICATING' | translate: { default: 'Đang xác thực...' }) : ('AUTH.LOGIN.BTN_SUBMIT' | translate: { default: 'Đăng nhập' })) }}
+          </span>
+        </button>
+
+      </form>
+
+      <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          {{ 'AUTH.LOGIN.HELPDESK_PREFIX' | translate: { default: 'Gặp sự cố đăng nhập? Liên hệ' } }} 
+          <a href="#" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+            {{ 'AUTH.LOGIN.IT_HELPDESK' | translate: { default: 'IT Helpdesk' } }}
+          </a> 
+          {{ 'AUTH.LOGIN.OR_HOTLINE' | translate: { default: 'hoặc Hotline' } }} <span class="font-mono text-slate-700 dark:text-slate-300 font-bold">1900-xxxx</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL QUÊN MẬT KHẨU ==================== -->
+  <div *ngIf="showForgotPasswordModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm p-4 animate-fade-in">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md p-6 relative space-y-5 border border-slate-100 dark:border-slate-800">
+      
+      <button 
+        type="button" 
+        (click)="closeForgotPasswordModal()" 
+        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+        </svg>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+          {{ 'AUTH.FORGOT.TITLE' | translate: { default: 'Khôi phục Mật khẩu' } }}
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          {{ 'AUTH.FORGOT.SUBTITLE' | translate: { default: 'Nhập thông tin tài khoản để nhận liên kết đặt lại mật khẩu' } }}
+        </p>
+      </div>
+
+      <div *ngIf="forgotSuccessMessage" class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-700 dark:text-emerald-400 text-xs rounded-lg">
+        {{ forgotSuccessMessage }}
+      </div>
+      <div *ngIf="forgotErrorMessage" class="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 text-xs rounded-lg">
+        {{ forgotErrorMessage }}
+      </div>
+
+      <form *ngIf="!forgotSuccessMessage" [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+            {{ 'AUTH.FORGOT.ACCOUNT_LABEL' | translate: { default: 'Tài khoản / Email / Mã NV' } }}
+          </label>
+          <input 
+            type="text" 
+            formControlName="accountInfo"
+            [placeholder]="'AUTH.FORGOT.ACCOUNT_PLACEHOLDER' | translate: { default: 'Nhập thông tin xác thực...' }"
+            class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 bg-white dark:bg-slate-800 transition duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          />
+          <p *ngIf="forgotPasswordForm.get('accountInfo')?.invalid && forgotPasswordForm.get('accountInfo')?.touched" class="text-xs text-red-500 dark:text-red-400 mt-1.5">
+            {{ 'AUTH.FORGOT.ERR_ACCOUNT_REQUIRED' | translate: { default: 'Vui lòng nhập thông tin tài khoản!' } }}
+          </p>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-2">
+          <button 
+            type="button" 
+            (click)="closeForgotPasswordModal()" 
+            class="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          >
+            {{ 'AUTH.FORGOT.BTN_CANCEL' | translate: { default: 'Hủy bỏ' } }}
+          </button>
+          <button 
+            type="submit" 
+            [disabled]="isSubmittingForgot"
+            class="px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-semibold text-white shadow-sm transition disabled:opacity-50 flex items-center space-x-2"
+          >
+            <svg *ngIf="isSubmittingForgot" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>
+              {{ (isSubmittingForgot ? ('AUTH.FORGOT.BTN_SENDING' | translate: { default: 'Đang gửi...' }) : ('AUTH.FORGOT.BTN_SUBMIT' | translate: { default: 'Gửi yêu cầu' })) }}
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <div *ngIf="forgotSuccessMessage" class="pt-2">
+        <button 
+          type="button" 
+          (click)="closeForgotPasswordModal()" 
+          class="w-full py-2.5 rounded-lg bg-slate-900 dark:bg-indigo-600 text-white text-xs font-semibold hover:bg-slate-800 dark:hover:bg-indigo-500 transition"
+        >
+          {{ 'AUTH.FORGOT.BTN_CLOSE' | translate: { default: 'Đóng' } }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
