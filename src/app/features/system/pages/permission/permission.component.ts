@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { forkJoin } from 'rxjs';
 import { SystemPermissionService } from '../../services/user-permission.service';
 import { SystemUser, UserRole, MenuItem } from '../../models/user-permission.model';
 import { SidebarPermissionComponent } from './sidebar-permission/sidebar-permission';
@@ -9,6 +10,7 @@ import { UserPermissionComponent } from './user-permission/user-permission';
 import { SystemRoles } from '../../models/roles-permission.model';
 import { RolesPermissionService } from '../../services/roles-premission.service';
 import { RolesPermissionComponent } from './roles-permission/roles-permission';
+import { NotificationService } from '../../../../shared/translate/notification.service';
 
 @Component({
   selector: 'app-permission',
@@ -22,6 +24,7 @@ export class PermissionComponent implements OnInit {
   public roleService = inject(RolesPermissionService);
   private cdr = inject(ChangeDetectorRef);
   private translate = inject(TranslateService);
+  private notificationService = inject(NotificationService);
 
   activeTab: 'safe' | 'roles' = 'safe';
   selectedUserId: number | null = null;
@@ -173,21 +176,38 @@ export class PermissionComponent implements OnInit {
 
   saveData(): void {
     if (!this.selectedUserId) return;
+
     if (this.activeTab === 'safe') {
       this.permissionService
         .saveUserSafePermissions(this.selectedUserId, this.menuTree)
         .subscribe({
-          next: () => alert('Lưu cấu hình phân quyền chi tiết (Safe) thành công!'),
-          error: () => alert('Lỗi khi lưu ma trận quyền!')
+          next: () => this.notificationService.showSuccess('Lưu cấu hình phân quyền chi tiết (Safe) thành công!'),
+          error: () => this.notificationService.showError('Lỗi khi lưu ma trận quyền!')
         });
+
     } else if (this.activeTab === 'roles') {
-      const requests = this.usersRoles.map((r) => 
+      if (!this.usersRoles.length) return;
+
+      // 🟢 FIX: phải forkJoin + subscribe thì các request mới thực sự được gửi đi.
+      // Trước đây chỉ .map() tạo ra mảng Observable rồi bỏ đó -> API không bao giờ chạy.
+      const requests = this.usersRoles.map((r) =>
         this.permissionService.saveUserRoles(
-          this.selectedUserId!, 
-          r.ROLE_ID, 
+          this.selectedUserId!,
+          r.ROLE_ID,
           r.IS_ASSIGNED === 1 ? 1 : 0
         )
       );
+
+      forkJoin(requests).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Đã cập nhật vai trò thành công!');
+          this.loadUserData(this.selectedUserId!); // load lại danh sách role sau khi lưu
+        },
+        error: (err) => {
+          console.error('Lỗi khi lưu vai trò:', err);
+          this.notificationService.showError('Lỗi khi lưu vai trò. Vui lòng thử lại.');
+        }
+      });
     }
   }
 

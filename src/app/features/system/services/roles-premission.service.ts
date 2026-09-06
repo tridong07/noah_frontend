@@ -1,9 +1,21 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { SystemRoles, SaveRoleSafePayload, SaveRolePayload } from '../models/roles-permission.model';
 import { MenuItem } from '../models/user-permission.model';
+
+export interface RolePermissionState {
+  selectedRoleId: number | null;
+  selectedRoleName: string;
+  isDirty: boolean;
+}
+
+const initialState: RolePermissionState = {
+  selectedRoleId: null,
+  selectedRoleName: '',
+  isDirty: false
+};
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +26,28 @@ export class RolesPermissionService {
     // URL gốc của backend
     private apiUrl = environment.apiUrl;
     private baseUrl = `${this.apiUrl}/roles`;
+
+    // Quản lý state tập trung để đồng bộ qua lại giữa các tab con
+    private stateSubject = new BehaviorSubject<RolePermissionState>(initialState);
+    public state$: Observable<RolePermissionState> = this.stateSubject.asObservable();
+
+    // Đánh dấu role đang được chọn / thao tác
+    selectRoleState(roleId: number, roleName: string = ''): void {
+        this.stateSubject.next({
+        selectedRoleId: roleId,
+        selectedRoleName: roleName,
+        isDirty: false
+        });
+    }
+
+    markAsDirty(isDirty: boolean = true): void {
+        const current = this.stateSubject.value;
+        this.stateSubject.next({ ...current, isDirty });
+    }
+
+    resetState(): void {
+        this.stateSubject.next(initialState);
+    }
 
     /**
      * GET /api/v1/roles

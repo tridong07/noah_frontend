@@ -42,6 +42,34 @@ export class RolesPermissionComponent implements OnChanges {
     this.activeTab = tab;
   }
 
+  toggleAllRow(item: MenuItem): void {
+    const nextState = !!item.all;
+    Object.assign(item, {
+      view: nextState, add: nextState, edit: nextState,
+      delete: nextState, adm: nextState, print: nextState,
+      reprn: nextState, man: nextState
+    });
+  }
+  
+  toggleNode(item: MenuItem): void {
+    item.expanded = !item.expanded;
+  }
+
+  expandAll(): void {
+    this.setAllNodesExpansion(this.menuTree, true);
+  }
+
+  collapseAll(): void {
+    this.setAllNodesExpansion(this.menuTree, false);
+  }
+
+  private setAllNodesExpansion(items: MenuItem[], expand: boolean): void {
+    items?.forEach(item => {
+      item.expanded = expand;
+      if (item.children?.length) this.setAllNodesExpansion(item.children, expand);
+    });
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedRole']) {
       //console.log('📌 Dữ liệu selectedRole nhận từ component cha:', changes['selectedRole'].currentValue);
